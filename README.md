@@ -50,7 +50,7 @@ bwa index purged_clean.fa
 
 bwa mem -M -t 30 purged_clean.fa markers_first100.fa markers_last100_rc.fa > aligned_paired.sam
 ```
-The scaffold using chromonomer:
+Then scaffold using chromonomer:
 ```
 module load bwa
 
