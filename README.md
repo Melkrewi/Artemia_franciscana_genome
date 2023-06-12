@@ -32,15 +32,23 @@ export PATH=~/minimap2/minimap2:$PATH
 ~/purge_dups/bin/get_seqs -e dups.bed artemia_franciscana.asm.bp.p_ctg.fasta
 ```
 ### Scaffold using the franciscana linkage map
+If I remember correctly, we would need to remove Ns from the start and ends of sequences
+```
+./seqkit -is replace -p "^n+|n+$" -r "" purged.fa > purged_clean.fa
+```
+Then we generate an agp file:
+```
+python /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/scripts/fasta2agp.py --fasta purged_clean.fa > test.agp
+```
 Map the markers to the assembly:
 ```
 module load bwa
 
 module load samtools
 
-bwa index purged.fa
+bwa index purged_clean.fa
 
-bwa mem -M -t 30 purged.fa markers_first100.fa markers_last100_rc.fa > aligned_paired.sam
+bwa mem -M -t 30 purged_clean.fa markers_first100.fa markers_last100_rc.fa > aligned_paired.sam
 ```
 The scaffold using chromonomer:
 ```
@@ -48,7 +56,7 @@ module load bwa
 
 module load samtools
 
-/nfs/scistore03/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged_clean.fa 
+/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged_clean.fa 
 #--rescaffold
 ```
 
