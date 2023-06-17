@@ -91,11 +91,19 @@ An output which is ready to be used in BRAKER and AUGUSTUS is also generated:
 
 This is detailed in this link (https://github.com/gatech-genemark/ProtHint#protein-database-preparation)
 
-## We then run braker using both RNA and protein hint
+## We then run braker using both RNA bam files and protein hint
 
 `srun braker.pl --genome=genome_clean_sorted.fasta.masked --bam=60541_hisatr_alignment_sorted.bam,60542_hisatr_alignment_sorted.bam,60543_hisatr_alignment_sorted.bam,60544_hisatr_alignment_sorted.bam,60545_hisatr_alignment_sorted.bam,60546_hisatr_alignment_sorted.bam,60547_hisatr_alignment_sorted.bam,60548_hisatr_alignment_sorted.bam -gff3 --useexisting --species=Artemia_francisca --etpmode --cores=30 --min_contig=5000 --softmasking --hints=prothint_augustus.gff --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_all/braker_outputetp`
 
+### It is recommended to run braker at least two times in order to reduce possibility of false positives. Therefore we will run above script but we will include the hint output of the braker
 
+`srun braker.pl --genome=genome_clean_sorted.fasta.masked --bam=60541_hisatr_alignment_sorted.bam,60542_hisatr_alignment_sorted.bam,60543_hisatr_alignment_sorted.bam,60544_hisatr_alignment_sorted.bam,60545_hisatr_alignment_sorted.bam,60546_hisatr_alignment_sorted.bam,60547_hisatr_alignment_sorted.bam,60548_hisatr_alignment_sorted.bam -gff3 --useexisting --species=Artemia_francisca --etpmode --cores=30 --min_contig=5000 --softmasking --hints=hintsfile.gff --hints=prothint_augustus.gff --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_all/braker_outputetprep`
+
+Braker produces many output files: 
+- augustus.hints.aa         - bam_header.map  - errors                  - genome_header.map
+- augustus.hints.codingseq  - braker.gff3     - GeneMark-ETP            - hintsfile.gff
+- augustus.hints.gff3       - braker.gtf      - genemark_evidence.gff   - species
+- augustus.hints.gtf        - braker.log      - genemark_hintsfile.gff  - what-to-cite.txt
 
 
 
