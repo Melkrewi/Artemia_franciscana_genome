@@ -10,7 +10,7 @@ export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/15.CCS/ccs_8_passe
 module load anaconda3/2022.05
 source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
 conda activate pbccs
-ccs ~/r64046_20230118_140133_C02/m64046_230121_101921.subreads.bam ccs.fastq.gz -j 100 --min-passes 8 
+ccs -j 100 --min-passes 8 ~/r64046_20230118_140133_C02/m64046_230121_101921.subreads.bam ccs.fastq.gz
 conda deactivate
 ```
 ### Assemble the reads using hifiasm:
