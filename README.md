@@ -3,6 +3,7 @@
 ### Generate consensus from raw bam file (if we get raw bam file):
 
 The first step is to generate the fastq file of the consensus reads from the raw reads using the CCS tool (here we can try --min-passes=3 and --min-passes=8):
+
 Make sure you set the TMP directory to the directory you're working in (adjust the first line)
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/15.CCS/ccs_8_passes/
