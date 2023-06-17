@@ -22,6 +22,29 @@ awk '/^S/{print ">"$2;print $3}' BRLI.asm.hic.hap1.p_ctg.gfa > BRLI.asm.hic.hap1
 awk '/^S/{print ">"$2;print $3}' BRLI.asm.hic.hap2.p_ctg.gfa > BRLI.asm.hic.hap2.p_ctg.fasta
 ```
 Let's look at the assembly stats and busco at this stage
+```
+module load assembly-stats/20170224
+assembly-stats artemia_franciscana.asm.bp.p_ctg.fasta
+```
+Add stats here:
+```
+Stats
+```
+```
+module load anaconda3/2022.05
+
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
+
+conda activate busco2
+
+busco -f -i artemia_franciscana.asm.bp.p_ctg.fasta -o busco -l arthropoda_odb10 -m geno -c 40
+
+conda deactivate
+```
+Add BUSCO score here.
+```
+BUSCO score
+```
 ### Purge haplotigs 
 We can use the primary assembly for now I guess, and purge it to remove the duplicates and haplotigs.
 ```
@@ -36,6 +59,16 @@ minimap2 -t 50 -xasm5 -DP artemia_franciscana.asm.bp.p_ctg.fasta.split artemia_f
 /nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/purge_dups -2 -T cutoffs -c PB.base.cov artemia_franciscana.asm.bp.p_ctg.fasta.split.self.paf.gz > dups.bed 2> purge_dups.log
 /nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/get_seqs -e dups.bed artemia_franciscana.asm.bp.p_ctg.fasta
 ```
+Let's look at the assembly stats and busco at this stage too.
+Add stats here:
+```
+Stats
+```
+Add BUSCO score here.
+```
+BUSCO score
+```
+
 ### Scaffold using the franciscana linkage map
 If I remember correctly, we would need to remove Ns from the start and ends of sequences
 ```
