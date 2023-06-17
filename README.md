@@ -7,7 +7,7 @@ The first step is to generate the fastq file of the consensus reads from the raw
 module load anaconda3/2022.05
 source ~/anaconda3/2022.05/activate_anaconda3_2022.05.txt
 conda activate pbccs
-ccs --minLength=100 ~/r64046_20230118_140133_C02/m64046_230121_101921.subreads.bam ccs.fastq.gz -j 40
+ccs ~/r64046_20230118_140133_C02/m64046_230121_101921.subreads.bam ccs.fastq.gz -j 100 --min-passes 8 
 conda deactivate
 ```
 ### Assemble the reads using hifiasm:
