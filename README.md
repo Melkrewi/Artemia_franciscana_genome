@@ -75,7 +75,7 @@ BUSCO score
 ### Scaffold using the franciscana linkage map
 If I remember correctly, we would need to remove Ns from the start and ends of sequences
 ```
-./seqkit -is replace -p "^n+|n+$" -r "" purged.fa > purged_clean.fa
+/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/quickmerge/KPI_and_bmc_2/purge/round2/chromonomer/seqkit -is replace -p "^n+|n+$" -r "" purged.fa > purged_clean.fa
 ```
 Then we generate an agp file:
 ```
