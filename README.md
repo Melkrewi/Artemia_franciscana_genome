@@ -15,6 +15,11 @@ conda deactivate
 module load hifiasm
 hifiasm  -t 100 -o artemia_franciscana.asm ccs.fastq.gz 
 ```
+Get fasta file from gfa. There are three assemblies (the primary, first haplotype and second haplotype, lets run three commands, 1 for each). Make sure you change the names accordingly:
+```
+awk '/^S/{print ">"$2;print $3}' BRLI.asm.hic.hap1.p_ctg.gfa > BRLI.asm.hic.hap1.p_ctg.fasta
+awk '/^S/{print ">"$2;print $3}' BRLI.asm.hic.hap2.p_ctg.gfa > BRLI.asm.hic.hap2.p_ctg.fasta
+```
 Let's look at the assembly stats and busco at this stage
 ### Purge haplotigs 
 We can use the primary assembly for now I guess, and purge it to remove the duplicates and haplotigs.
