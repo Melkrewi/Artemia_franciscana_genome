@@ -100,12 +100,24 @@ This is detailed in this link (https://github.com/gatech-genemark/ProtHint#prote
 `srun braker.pl --genome=genome_clean_sorted.fasta.masked --bam=60541_hisatr_alignment_sorted.bam,60542_hisatr_alignment_sorted.bam,60543_hisatr_alignment_sorted.bam,60544_hisatr_alignment_sorted.bam,60545_hisatr_alignment_sorted.bam,60546_hisatr_alignment_sorted.bam,60547_hisatr_alignment_sorted.bam,60548_hisatr_alignment_sorted.bam -gff3 --useexisting --species=Artemia_francisca --etpmode --cores=30 --min_contig=5000 --softmasking --hints=hintsfile.gff --hints=prothint_augustus.gff --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_all/braker_outputetprep`
 
 Braker produces many output files: 
-- augustus.hints.aa         - bam_header.map  - errors                  - genome_header.map
-- augustus.hints.codingseq  - braker.gff3     - GeneMark-ETP            - hintsfile.gff
-- augustus.hints.gff3       - braker.gtf      - genemark_evidence.gff   - species
-- augustus.hints.gtf        - braker.log      - genemark_hintsfile.gff  - what-to-cite.txt
+- augustus.hints.aa
+- bam_header.map
+- errors
+- genome_header.map
+- augustus.hints.codingseq
+- braker.gff3
+- GeneMark-ETP
+- hintsfile.gff
+- augustus.hints.gff3       
+- braker.gtf
+- genemark_evidence.gff
+- species
+- augustus.hints.gtf
+- braker.log
+- genemark_hintsfile.gff
+-  what-to-cite.txt
 
 
-
+There is no much differences between augustus.hints.gtf and braker.gtf. However, augustus.hints.gtf has been validated and this is what I normally use though
 
 
