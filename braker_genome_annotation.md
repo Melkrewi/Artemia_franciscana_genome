@@ -45,10 +45,11 @@ done
 srun BuildDatabase -name Afranciscana_genomeclean -engine ncbi genome_clean_sorted.fasta
 
 srun RepeatModeler -threads 60 -database Afranciscana_genomeclean -engine ncbi
-
+```
+## We then annotate the repeats using the library databases created above
+```
 srun RepeatMasker -pa 60 -e ncbi -lib Afranciscana_genomeclean-families.fa -xsmall -dir Afran_maskallrepeats genome_clean_sorted.fasta
 ```
-
 # We then run genome annotation using BRAKER 
 
 This is detailed in this link (https://github.com/Gaius-Augustus/BRAKER)
