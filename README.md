@@ -41,7 +41,7 @@ busco -f -i artemia_franciscana.asm.bp.p_ctg.fasta -o busco -l arthropoda_odb10 
 
 conda deactivate
 ```
-Add BUSCO score here.
+Add BUSCO score here:
 ```
 BUSCO score
 ```
