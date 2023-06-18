@@ -102,6 +102,10 @@ module load samtools
 #--rescaffold
 ```
 ### Additional Stuff (Filter the pacbio reads for quality/using short reads) with filtlong:
+We can filter for length > 10000:
+```
+/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong ccs.fastq --min_length 10000 | gzip > output_filtlong.fastq.gz
+```
 We can use the female franciscana short reads here (change the file names)
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/
