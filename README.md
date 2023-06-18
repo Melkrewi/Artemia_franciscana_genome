@@ -102,6 +102,7 @@ module load samtools
 #--rescaffold
 ```
 ### Additional Stuff (Filter the pacbio reads for quality/using short reads) with filtlong:
+We can use the female franciscana short reads here (change the file names)
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/
 
