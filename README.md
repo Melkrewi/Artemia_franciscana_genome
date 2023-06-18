@@ -101,5 +101,9 @@ module load samtools
 /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged_clean.fa 
 #--rescaffold
 ```
+### Additional Stuff (Filter the pacbio reads for quality/using short reads) with filtlong:
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/
 
-
+/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 199208_S1_L003_1_paired.fastq -2 199208_S1_L003_2_paired.fastq --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output.fastq.gz
+```
