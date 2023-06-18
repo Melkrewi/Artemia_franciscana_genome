@@ -112,7 +112,7 @@ export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/
 
 /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 199208_S1_L003_1_paired.fastq -2 199208_S1_L003_2_paired.fastq --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output.fastq.gz
 ```
-###Flye (hifi option)
+### Flye (hifi option)
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/9.random_sample_on_steroids/
 module load python
