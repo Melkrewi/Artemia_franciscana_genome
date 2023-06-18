@@ -118,3 +118,8 @@ export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/9.random_sample_on
 module load python
 python /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/5.Flye/Flye/bin/flye --pacbio-hifi ccs.fastq.gz --genome-size 1g --threads 100 --out-dir ./assembly --scaffold
 ```
+### hifiasm (auto coverage)
+```
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
+hifiasm -t 100 --hom-cov 20 -o artemia_franciscana.asm ccs.fastq.gz 
+```
