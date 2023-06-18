@@ -121,5 +121,5 @@ python /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/5.Flye/Flye/bin/flye --pa
 ### hifiasm (auto coverage)
 ```
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
-hifiasm -t 100 --hom-cov 20 -o artemia_franciscana.asm ccs.fastq.gz 
+hifiasm -t 100 --hom-cov 20 --n-hap 4 -o artemia_franciscana.asm ccs.fastq.gz 
 ```
