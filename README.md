@@ -108,7 +108,7 @@ bwa index purged_clean.fa
 bwa mem -M -t 30 purged_clean.fa markers_first100.fa markers_last100_rc.fa > aligned_paired.sam
 ```
 Then scaffold using chromonomer:
-Initially, I think we should try without rescaffold. The linkage_map.tsv file is in this repository
+Initially, I think we should try without rescaffold. The linkage_map.tsv file is in this repository. Note: You need to make the output folder before running. (output_paired)
 ```
 module load bwa
 
