@@ -82,7 +82,7 @@ Let's look at the assembly stats and busco at this stage too.
 Add stats here:
 ```
 Stats
-
+```
 Add BUSCO score here.
 ```
 BUSCO score
