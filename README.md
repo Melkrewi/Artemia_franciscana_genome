@@ -32,7 +32,6 @@ assembly-stats artemia_franciscana.asm.bp.p_ctg.fasta
 Add stats here:
 ```
 Stats
-```
 /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 CC2U_7_1.fastq.gz -2 CC2U_7_2.fastq.gz --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output_short.fastq.gz
 hifiasm  -t 100 -o artemia_franciscana_filtshortlong.asm output_short.fastq.gz
 ```
