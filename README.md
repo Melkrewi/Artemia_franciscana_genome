@@ -35,6 +35,7 @@ Stats
 /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 CC2U_7_1.fastq.gz -2 CC2U_7_2.fastq.gz --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output_short.fastq.gz
 hifiasm  -t 100 -o artemia_franciscana_filtshortlong.asm output_short.fastq.gz
 ```
+```
 assembly-stats artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
 stats for artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
 sum = 1591112320, n = 19113, ave = 83247.65, largest = 1378558
@@ -46,7 +47,7 @@ N90 = 36805, n = 13184
 N100 = 3799, n = 19113
 N_count = 0
 Gaps = 0
-
+```
 
 ```
 module load anaconda3/2022.05
