@@ -66,7 +66,22 @@ Let's look at the assembly stats and busco at this stage too.
 Add stats here:
 ```
 Stats
+/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 CC2U_7_1.fastq.gz -2 CC2U_7_2.fastq.gz --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output_short.fastq.gz
+hifiasm  -t 100 -o artemia_franciscana_filtshortlong.asm output_short.fastq.gz
 ```
+assembly-stats artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
+stats for artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
+sum = 1591112320, n = 19113, ave = 83247.65, largest = 1378558
+N50 = 122757, n = 3898
+N60 = 98595, n = 5344
+N70 = 76150, n = 7177
+N80 = 54827, n = 9639
+N90 = 36805, n = 13184
+N100 = 3799, n = 19113
+N_count = 0
+Gaps = 0
+
+
 Add BUSCO score here.
 ```
 BUSCO score
