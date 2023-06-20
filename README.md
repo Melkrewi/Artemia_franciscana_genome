@@ -29,12 +29,12 @@ Let's look at the assembly stats and busco at this stage
 module load assembly-stats/20170224
 assembly-stats artemia_franciscana.asm.bp.p_ctg.fasta
 ```
-Add stats here:
+We can filter the Pacbio reads using the female short reads:
 ```
-Stats
 /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 CC2U_7_1.fastq.gz -2 CC2U_7_2.fastq.gz --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output_short.fastq.gz
 hifiasm  -t 100 -o artemia_franciscana_filtshortlong.asm output_short.fastq.gz
 ```
+The stats when assembling using the filtered reads:
 ```
 assembly-stats artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
 stats for artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
@@ -48,7 +48,7 @@ N100 = 3799, n = 19113
 N_count = 0
 Gaps = 0
 ```
-The basic statistics for minimum passes 3 
+The basic statistics for minimum passes 3 and filtering using female short reads:
 ```
 stats for artemia_franciscana_short_minpasses3.asm.bp.p_ctg.fasta
 sum = 1462319637, n = 11286, ave = 129569.35, largest = 1953135
