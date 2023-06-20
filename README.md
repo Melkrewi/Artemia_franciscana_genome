@@ -152,3 +152,13 @@ python /nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/5.Flye/Flye/bin/flye --pa
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
 hifiasm -t 100 --hom-cov 20 --n-hap 4 -o artemia_franciscana.asm ccs.fastq.gz 
 ```
+### Scaffolding using ARCS
+```
+module load samtools
+module load minimap2
+module load abyss
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/Arcs/:$PATH
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/links/bin/:$PATH
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/::$PATH
+/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/bin/arcs-make arcs-long draft=purged reads=output_short_minpasses3 t=100 m=8-10000 s=70 c=2 l=2 a=0.7
+```
