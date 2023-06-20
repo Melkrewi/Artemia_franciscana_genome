@@ -61,6 +61,7 @@ N100 = 3351, n = 11286
 N_count = 0
 Gaps = 0
 ```
+Code to run BUSCO:
 ```
 module load anaconda3/2022.05
 
