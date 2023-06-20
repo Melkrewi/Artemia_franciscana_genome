@@ -48,7 +48,19 @@ N100 = 3799, n = 19113
 N_count = 0
 Gaps = 0
 ```
-
+The basic statistics for minimum passes 3 
+```
+stats for artemia_franciscana_short_minpasses3.asm.bp.p_ctg.fasta
+sum = 1462319637, n = 11286, ave = 129569.35, largest = 1953135
+N50 = 278035, n = 1473
+N60 = 203051, n = 2088
+N70 = 142127, n = 2947
+N80 = 88917, n = 4248
+N90 = 51132, n = 6431
+N100 = 3351, n = 11286
+N_count = 0
+Gaps = 0
+```
 ```
 module load anaconda3/2022.05
 
