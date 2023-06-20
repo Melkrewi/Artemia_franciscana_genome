@@ -163,3 +163,18 @@ export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/links/bin/:$PA
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/::$PATH
 /nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/bin/arcs-make arcs-long draft=purged reads=output_short_minpasses3 t=100 m=8-10000 s=70 c=2 l=2 a=0.7
 ```
+### Correcting the reads using Hicanu:
+```
+module load perl
+
+module load java
+module load gnuplot
+
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/hicanu/
+module load python
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/hicanu/canu-2.2/bin/:$PATH
+canu -correct \
+ -p asm -d artemia_hifi_correct \
+ genomeSize=1g \
+ -pacbio output_short_minpasses3.fastq.gz maxThreads=30 maxMemory=200G useGrid=false
+```
