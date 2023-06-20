@@ -126,6 +126,7 @@ module load bwa
 
 module load samtools
 
+mkdir output_paired
 /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged_clean.fa 
 #--rescaffold
 ```
