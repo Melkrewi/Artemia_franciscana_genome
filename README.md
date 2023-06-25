@@ -198,3 +198,7 @@ bwa mem -t 60 A_franciscana.genome.fasta CC2U_7_1_paired.fastq CC2U_7_2_paired.f
 
 /nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/get_seqs -e dups.bed A_franciscana.genome.fasta
 ```
+### Most recent idea
+Currently thinking of how to phase the Z and W haplotypes. I tried trio-binning and it seems to kinda work, but not so well. I also tried filtering with male reads to remove W and assemble just the Z, but that did not work.
+I am testing SRY now to get the W specific reads, then the idea would be to remove them from the reads file to get the Z seperately and then attempt to assemble the W on its own. 
+
