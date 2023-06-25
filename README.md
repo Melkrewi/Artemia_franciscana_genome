@@ -13,11 +13,13 @@
 11. Make final figures and write the paper/genome report.
 
 # Things that we tried/could still potentially try:
-1. I tested using the ultra long option with reads > 50000 bp, and it seems promising (N50 improved a bit for 8 passes), but let's see if we can get good results without it.
+1. I tested using the ultra long option with reads > 50000 bp, and it seems promising (N50 improved a bit for 8 passes), but let's see if we can get good results without it. The ultralong reads option is for a specific ONT technology, but I've seen other people use the option with the longest pacbio subreads.
 2. I tried to self-correct the reads using Fec, but the assembly was really bad.
-3. I tried to correct the reads with Lordec (short reads), but it took forever, and I cancelled the job after three days.
-4. We can try other ways to align the markers for chromonomer.
+3. I tried to correct the reads with Lordec (short reads), but it took forever, and I cancelled the job after three days. (We can start it again at some point, but I think it might take 10 days or so to run).
+4. We can try other ways to align the markers for chromonomer (low priority).
 5. I checked for adapter contamination, but it was only in around 200 reads out of 5 million, so not a problem.
+6. I tried hifiasm with smaller kmer size, but it did not improve the assembly.
+7. I could not find how the -x and -y parameters in hifiasm work, but we can try changing them at some point (very low priority). 
 
 # Initial pipeline
 
