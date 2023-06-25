@@ -224,3 +224,19 @@ Currently thinking of how to phase the Z and W haplotypes. I tried trio-binning 
 I am testing SRY now to get the W specific reads, then the idea would be to remove them from the reads file to get the Z seperately and then attempt to assemble the W on its own. 
 # Promising Assembler Nextdenovo
 I tested it with the 8 passes and filtered only, and it did slightly better than hifiasm, but let's see. I'll keep you updated.
+Assembly with no scaffolding:
+```
+sum = 947684741, n = 6815, ave = 139058.66, largest = 1503388
+N50 = 187352, n = 1293
+N60 = 147642, n = 1867
+N70 = 115369, n = 2589
+N80 = 88576, n = 3528
+N90 = 64194, n = 4781
+N100 = 12472, n = 6815
+N_count = 0
+Gaps = 0
+```
+Busco score with no scaffolding same assembly:
+```
+C:77.6%[S:72.7%,D:4.9%],F:11.2%,M:11.2%,n:1013
+```
