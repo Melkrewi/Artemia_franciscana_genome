@@ -1,3 +1,12 @@
+#Imaginary Plan:
+1. Use SRY to identify the W/female-specific reads.
+2. Remove those reads from the pacbio fastq, and assemble using Hifiasm and Nextdenovo.
+3. Purge using long-reads/short reads, depending on what works better.
+4. Scaffold using Arcs.
+5. Scaffold using Chromonomer with the modified linkage map, but hopefully without the xb-1 (if we manage to remove the W specific reads).
+6. check stats, busco, and coverage.
+7. Assemble the W reads using the same pipeline to see if we get anything, and then add it to the assembly (hopefully we can assemble xb-1).
+
 # Artemia_franciscana_genome
 
 ### Generate consensus from raw bam file (if we get raw bam file):
