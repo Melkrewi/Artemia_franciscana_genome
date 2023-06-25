@@ -14,7 +14,7 @@
 
 # Things that we tried/could still potentially try:
 1. I tested using the ultra long option with reads > 50000 bp, and it seems promising (N50 improved a bit for 8 passes), but let's see if we can get good results without it.
-2. I tried to correct the reads using Fec, but the assembly was really bad.
+2. I tried to self-correct the reads using Fec, but the assembly was really bad.
 3. I tried to correct the reads with Lordec (short reads), but it took forever, and I cancelled the job after three days.
 4. We can try other ways to align the markers for chromonomer.
 5. I checked for adapter contamination, but it was only in around 200 reads out of 5 million, so not a problem.
