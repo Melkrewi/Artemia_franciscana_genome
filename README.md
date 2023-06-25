@@ -1,5 +1,5 @@
 # Artemia_franciscana_genome
-# Imaginary Plan:
+# Current Imaginary Plan:
 1. Use SRY to identify the W/female-specific reads.
 2. Remove those reads from the pacbio fastq, and assemble using Hifiasm and Nextdenovo.
 3. Purge using long-reads/short reads, depending on what works better.
