@@ -2,7 +2,8 @@
 # Goals:
 1. Clean coverage in the S0 (high importance)
 2. N50 >= 1MB before scaffolding (medium improtance, but we can survive without it)
-3. Some of the W-chromosome (the icing on the cake).
+3. BUSCO score complete >= 90% and a reasonable number of duplicated buscos (medium importance)
+4. Some of the W-chromosome (the icing on the cake).
 # Current Imaginary Plan:
 1. Use SRY to identify the W/female-specific reads.
 2. Remove those reads from the pacbio fastq, and assemble using Hifiasm and Nextdenovo.
