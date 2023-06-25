@@ -202,4 +202,4 @@ bwa mem -t 60 A_franciscana.genome.fasta CC2U_7_1_paired.fastq CC2U_7_2_paired.f
 Currently thinking of how to phase the Z and W haplotypes. I tried trio-binning and it seems to kinda work, but not so well. I also tried filtering with male reads to remove W and assemble just the Z, but that did not work.
 I am testing SRY now to get the W specific reads, then the idea would be to remove them from the reads file to get the Z seperately and then attempt to assemble the W on its own. 
 # Promising Assembler Nextdenovo
-I tested with the 8 passes and filtered only, and it did slightly better than hifiasm, but let's see. I'll keep you updated.
+I tested it with the 8 passes and filtered only, and it did slightly better than hifiasm, but let's see. I'll keep you updated.
