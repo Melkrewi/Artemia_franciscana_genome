@@ -10,7 +10,7 @@
 8. Run blobtools to check for contamination, and remove any if found.
 9. Do final stats and busco.
 10. Annotate the genome.
-
+11. Make final figures and write the paper/genome report.
 
 ### Generate consensus from raw bam file (if we get raw bam file):
 
