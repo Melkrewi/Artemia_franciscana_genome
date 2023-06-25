@@ -19,6 +19,8 @@
 4. We can try other ways to align the markers for chromonomer.
 5. I checked for adapter contamination, but it was only in around 200 reads out of 5 million, so not a problem.
 
+# Initial pipeline
+
 ### Generate consensus from raw bam file (if we get raw bam file):
 
 The first step is to generate the fastq file of the consensus reads from the raw reads using the CCS tool (here we can try --min-passes=3 and --min-passes=8):
