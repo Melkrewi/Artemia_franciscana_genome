@@ -24,7 +24,8 @@
 4. We can try other ways to align the markers for chromonomer (low priority).
 5. I checked for adapter contamination, but it was only in around 200 reads out of 5 million, so not a problem.
 6. I tried hifiasm with smaller kmer size, but it did not improve the assembly.
-7. I could not find how the -x and -y parameters in hifiasm work, but we can try changing them at some point (very low priority). 
+7. I could not find how the -x and -y parameters in hifiasm work, but we can try changing them at some point (very low priority).
+8. There are many CLR assemblers, which we can try (Miniasm/Raven/Flye). I tried flye but with hifi option, not CLR.
 
 # Initial pipeline
 
