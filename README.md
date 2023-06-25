@@ -8,7 +8,7 @@
 6. Check stats, busco, and coverage.
 7. Assemble the W reads using the same pipeline to see if we get anything, and then add it to the assembly (hopefully we can assemble xb-1).
 8. Run blobtools to check for contamination, and remove any if found.
-9. Do final stats and busco.
+9. Do final stats, coverage and busco.
 10. Annotate the genome.
 11. Make final figures and write the paper/genome report.
 
