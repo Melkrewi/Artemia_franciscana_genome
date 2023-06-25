@@ -1,7 +1,7 @@
 # Artemia_franciscana_genome
 # Goals:
 1. Clean coverage in the S0 (high importance)
-2. N50 >= 1MB (medium improtance, but we can survive without it)
+2. N50 >= 1MB before scaffolding (medium improtance, but we can survive without it)
 3. Some of the W-chromosome (the icing on the cake).
 # Current Imaginary Plan:
 1. Use SRY to identify the W/female-specific reads.
