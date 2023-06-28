@@ -1,4 +1,7 @@
 # Artemia_franciscana_genome
+
+# Currently testing a different tool to call consensensus: deepconsensus
+
 # Goals:
 1. Clean coverage in the S0 (high importance)
 2. N50 >= 1MB before scaffolding (medium improtance, but we can survive without it)
