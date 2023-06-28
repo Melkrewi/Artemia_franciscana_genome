@@ -1,6 +1,7 @@
 # Artemia_franciscana_genome
 
 # Currently testing a different tool to call consensensus: deepconsensus
+https://github.com/google/deepconsensus/blob/r1.2/docs/quick_start.md
 
 # Goals:
 1. Clean coverage in the S0 (high importance)
