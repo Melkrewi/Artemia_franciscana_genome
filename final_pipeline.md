@@ -114,6 +114,7 @@ module load python/2.7
 python /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/scripts/fasta2agp.py --fasta purged_clean.fa > test.agp
 ```
 Map the markers to the assembly:
+
 I wrote some commands to clean the excel file with the markers to make life easier. I used csvkit to convert the xlsx file to csv (pip install csvkit) :
 ```
 module load python
