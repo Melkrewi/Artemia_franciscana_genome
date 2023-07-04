@@ -110,6 +110,7 @@ If I remember correctly, we would need to remove Ns from the start and ends of s
 ```
 Then we generate an agp file:
 ```
+module load python/2.7
 python /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/scripts/fasta2agp.py --fasta purged_clean.fa > test.agp
 ```
 Map the markers to the assembly (the marker files are in this repository):
