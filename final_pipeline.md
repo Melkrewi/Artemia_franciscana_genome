@@ -104,6 +104,16 @@ export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1
 ```
 
 ### Scaffold using the franciscana linkage map
+I wrote a code to clean the excel file with the markers to make life easier. I used csvkit to convert the xlsx file to csv (pip install csvkit) :
+```
+module load python
+wget https://ars.els-cdn.com/content/image/1-s2.0-S0044848621003549-mmc3.xlsx
+in2csv 1-s2.0-S0044848621003549-mmc3.xlsx > slaf_markers.csv
+sed -i '1,1d' slaf_markers.csv
+tr -d ',' < slaf_markers.csv | sed -n '/>Marker/,+1p' > slaf_markers_clean.csv
+sed -E '/>/! s/^(.{100}).*/\1/' slaf_markers_clean.csv > markers_1.fa
+sed -Ee 's/^.*(.{101})$/\1/' slaf_markers_clean.csv > markers_2.fa
+```
 If I remember correctly, we would need to remove Ns from the start and ends of sequences
 ```
 /nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/quickmerge/KPI_and_bmc_2/purge/round2/chromonomer/seqkit -is replace -p "^n+|n+$" -r "" purged.fa > purged_clean.fa
