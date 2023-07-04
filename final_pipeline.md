@@ -13,54 +13,40 @@ conda activate pbccs
 ccs -j 100 --all /nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/r64046_20230525_135433_C02/m64046_230528_074955.subreads.bam ccs_all.fastq.gz
 conda deactivate
 ```
+### Find Female specific kmers:
+We find the female specific kmers from the short reads, and use them to remove putative W-reads from the fastq file:
+```
+module load bbmap
+
+#mercountexact.sh k=21 in1=CC2U_7_1.fastq in2=CC2U_7_2.fastq out=sfemale_mer_fran.fa mincount=2
+
+bbduk.sh k=21 in=sfemale_mer_fran.fa out=female_specific_mers.fasta ref=CC2U_6_1.fastq,CC2U_6_2.fastq -Xmx400g
+
+bbduk.sh k=21 in=ccs_all.fastq outm=ccs_female_specific_0.2.fastq ref=female_specific_mers.fasta mkf=0.2 -Xmx99g
+
+cat ccs_female_specific_0.2.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_female_specific_0.2.fastq.readsID
+cat ccs_all.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_all.fastq.readsID
+grep -f ccs_female_specific_0.2.fastq.readsID ccs_all.fastq.readsID -v > remaining.list
+module load seqtk
+seqtk subseq ccs_all.fastq remaining.list | gzip - > ccs_all_without_W.fastq.gz
+```
+
 ### Assemble the reads using hifiasm:
 ```
-module load hifiasm
-hifiasm  -t 100 -o artemia_franciscana.asm ccs.fastq.gz 
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
+hifiasm -t 100 --hg-size 1g --n-hap 4 -s 0.4 -o artemia_franciscana_all_no_W.asm ccs_all_without_W.fastq.gz
 ```
 Get fasta file from gfa. There are three assemblies (the primary, first haplotype and second haplotype, lets run three commands, 1 for each). Make sure you change the names accordingly:
 ```
-awk '/^S/{print ">"$2;print $3}' artemia_franciscana.asm.bp.p_ctg.gfa > artemia_franciscana.asm.bp.p_ctg.fasta
-awk '/^S/{print ">"$2;print $3}' BRLI.asm.hic.hap1.p_ctg.gfa > BRLI.asm.hic.hap1.p_ctg.fasta
-awk '/^S/{print ">"$2;print $3}' BRLI.asm.hic.hap2.p_ctg.gfa > BRLI.asm.hic.hap2.p_ctg.fasta
+awk '/^S/{print ">"$2;print $3}' artemia_franciscana_all_no_W.asm.bp.p_ctg.gfa > artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
+
 ```
 Let's look at the assembly stats and busco at this stage
 ```
 module load assembly-stats/20170224
-assembly-stats artemia_franciscana.asm.bp.p_ctg.fasta
+assembly-stats artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
 ```
-We can filter the Pacbio reads using the female short reads:
-```
-/nfs/scistore18/vicosgrp/melkrewi/panorpa_paper/11.filter_reads/Filtlong/bin/filtlong -1 CC2U_7_1.fastq.gz -2 CC2U_7_2.fastq.gz --min_length 1000 --trim --split 500 ccs.fastq.gz | gzip > output_short.fastq.gz
-hifiasm  -t 100 -o artemia_franciscana_filtshortlong.asm output_short.fastq.gz
-```
-The stats when assembling using the filtered reads:
-```
-assembly-stats artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
-stats for artemia_franciscana_filtshortlong.asm.bp.p_ctg.fasta
-sum = 1591112320, n = 19113, ave = 83247.65, largest = 1378558
-N50 = 122757, n = 3898
-N60 = 98595, n = 5344
-N70 = 76150, n = 7177
-N80 = 54827, n = 9639
-N90 = 36805, n = 13184
-N100 = 3799, n = 19113
-N_count = 0
-Gaps = 0
-```
-The basic statistics for minimum passes 3 and filtering using female short reads:
-```
-stats for artemia_franciscana_short_minpasses3.asm.bp.p_ctg.fasta
-sum = 1462319637, n = 11286, ave = 129569.35, largest = 1953135
-N50 = 278035, n = 1473
-N60 = 203051, n = 2088
-N70 = 142127, n = 2947
-N80 = 88917, n = 4248
-N90 = 51132, n = 6431
-N100 = 3351, n = 11286
-N_count = 0
-Gaps = 0
-```
+
 Code to run BUSCO:
 ```
 module load anaconda3/2022.05
