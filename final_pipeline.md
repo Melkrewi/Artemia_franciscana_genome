@@ -14,8 +14,27 @@ ccs -j 100 --all /nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_da
 conda deactivate
 ```
 ### Find Female specific kmers:
-We find the female specific kmers from the short reads, and use them to remove putative W-reads from the fastq file:
+We find the female specific kmers from the short reads, and use them to remove putative W-reads from the fastq file (We try mkf=0.1 and 0.2):
 ```
+#mkf=0.1
+
+module load bbmap
+
+kmercountexact.sh k=21 in1=CC2U_7_1.fastq in2=CC2U_7_2.fastq out=sfemale_mer_fran.fa mincount=2
+
+bbduk.sh k=21 in=sfemale_mer_fran.fa out=female_specific_mers.fasta ref=CC2U_6_1.fastq,CC2U_6_2.fastq -Xmx300g
+
+bbduk.sh k=21 in=ccs_all.fastq outm=ccs_female_specific_0.1.fastq ref=female_specific_mers.fasta mkf=0.1 -Xmx300g
+
+cat ccs_female_specific_0.1.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_female_specific_0.1.fastq.readsID
+cat ccs_all.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_all.fastq.readsID
+grep -f ccs_female_specific_0.1.fastq.readsID ccs_all.fastq.readsID -v > remaining.list
+module load seqtk
+seqtk subseq ccs_all.fastq remaining.list | gzip - > ccs_all_without_W_0.1.fastq.gz
+```
+
+```
+#mkf=0.2
 module load bbmap
 
 kmercountexact.sh k=21 in1=CC2U_7_1.fastq in2=CC2U_7_2.fastq out=sfemale_mer_fran.fa mincount=2
