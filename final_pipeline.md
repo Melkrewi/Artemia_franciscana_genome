@@ -171,3 +171,18 @@ module load samtools
 mkdir output_paired
 /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map_modified_no_XB1.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged.fa.k32.w100.z1000.ntLink.scaffolds_c2_m8-10000_cut250_k20_r0.05_e30000_z1000_l2_a0.8.scaffolds_clean.fa
 ```
+### Polish using Nextpolish2 (installation was not straightforward, but it might have worked, currently the minimap step is running):
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/9.nextpolish2/
+module load samtools
+module load minimap2
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/9.nextpolish2/NextPolish2/target/release/:$PATH
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/hifiasm_updated/yak/:$PATH
+minimap2 -ax map-hifi -t 40 CHRR_integrated.fa ccs_all_without_W.fastq.gz | samtools sort -o hifi.map.sort.bam -
+samtools index hifi.map.sort.bam
+
+yak count -o k21.yak -k 21 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
+yak count -o k31.yak -k 31 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
+
+nextPolish2 -t 40 hifi.map.sort.bam asm.fa.gz k21.yak k31.yak > asm.np2.fa
+```
