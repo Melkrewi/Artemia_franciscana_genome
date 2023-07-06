@@ -111,15 +111,19 @@ Add BUSCO score here.
 ```
 BUSCO score
 ```
-### Scaffolding using ARCS
+### Scaffolding using ntLink+ARCS
 ```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/
 module load samtools
 module load minimap2
 module load abyss
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/Arcs/:$PATH
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/links/bin/:$PATH
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/::$PATH
-/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/bin/arcs-make arcs-long draft=purged reads=output_short_minpasses3 t=100 m=8-10000 s=70 c=2 l=2 a=0.7
+module load anaconda3/2023.04
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2023.04/activate_anaconda3_2023.04.txt
+conda activate longstitch_new
+/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/longstitch-1.0.4/longstitch ntLink-arks draft=purged reads=ccs_all_without_W G=1g t=100 k_arks=20 j=0.05 c=2 l=2 a=0.8
 ```
 
 ### Scaffold using the franciscana linkage map
@@ -162,6 +166,5 @@ module load bwa
 module load samtools
 
 mkdir output_paired
-/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged_clean.fa 
-#--rescaffold
+/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map_modified_no_XB1.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged.fa.k32.w100.z1000.ntLink.scaffolds_c2_m8-10000_cut250_k20_r0.05_e30000_z1000_l2_a0.8.scaffolds_clean.fa
 ```
