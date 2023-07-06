@@ -184,5 +184,5 @@ samtools index hifi.map.sort.bam
 yak count -o k21.yak -k 21 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 yak count -o k31.yak -k 31 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 
-nextPolish2 -t 40 hifi.map.sort.bam asm.fa.gz k21.yak k31.yak > asm.np2.fa
+nextPolish2 -t 40 hifi.map.sort.bam CHRR_integrated.fa k21.yak k31.yak > asm.np2.fa
 ```
