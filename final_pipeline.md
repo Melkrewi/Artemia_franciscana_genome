@@ -159,7 +159,10 @@ bwa index purged_clean.fa
 bwa mem -M -t 30 purged_clean.fa markers_first100.fa markers_last100_rc.fa > aligned_paired.sam
 ```
 Then scaffold using chromonomer:
-Initially, I think we should try without rescaffold. The linkage_map.tsv file is in this repository. Note: You need to make the output folder before running. (output_paired)
+Initially, I think we should try without rescaffold. The modified linkage_map is in the folder below. Note: You need to make the output folder before running. (output_paired)
+```
+cp /nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/ntlinks+arks/chromonomer/linkage_map_modified_no_XB1.tsv .
+```
 ```
 module load bwa
 
