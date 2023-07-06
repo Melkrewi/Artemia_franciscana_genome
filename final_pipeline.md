@@ -53,7 +53,7 @@ seqtk subseq ccs_all.fastq remaining.list | gzip - > ccs_all_without_W.fastq.gz
 ### Assemble the reads using hifiasm:
 ```
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
-hifiasm -t 100 --hg-size 1g --n-hap 4 -s 0.4 -o artemia_franciscana_all_no_W.asm ccs_all_without_W.fastq.gz
+hifiasm -t 100 --hg-size 1g --n-hap 4 -r 5 -s 0.4 -N 150 -o artemia_franciscana_all_no_W.asm ccs_all_without_W.fastq.gz
 ```
 Get fasta file from gfa. There are three assemblies (the primary, first haplotype and second haplotype, lets run three commands, 1 for each). Make sure you change the names accordingly:
 ```
