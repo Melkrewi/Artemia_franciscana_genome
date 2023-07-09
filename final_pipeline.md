@@ -171,6 +171,42 @@ module load samtools
 mkdir output_paired
 /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map_modified_no_XB1.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged.fa.k32.w100.z1000.ntLink.scaffolds_c2_m8-10000_cut250_k20_r0.05_e30000_z1000_l2_a0.8.scaffolds_clean.fa
 ```
+### Gap filling using TGSgapcloser 
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V1/3.TGSgapfiller/mkf0.2_female/
+#./smrtlink_11.1.0.166339.run
+module load anaconda3/2022.05
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
+conda activate TGScloser
+sed '/^>/ s/,.*//' CHRR_integrated.fa > CHRR_integrated_clean.fa
+tgsgapcloser --scaff CHRR_integrated_clean.fa --reads ccs_all_without_W_0.1.fastq.gz --output CHRR_integrated_TGS --thread 80 --ne --tgstype pb
+conda deactivate
+```
+### Polish with racon + merfin
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V1/3.TGSgapfiller/mkf0.2_female/T2T/
+module load samtools
+module load bcftools
+module load minimap2
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/12.T2T/racon/build/bin/:$PATH
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/12.T2T/merfin/build/bin/:$PATH
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/12.T2T/Winnowmap/bin/:$PATH
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/12.T2T/T2T-Polish-1.0/automated_polishing/:$PATH
+module load anaconda3/2022.05
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
+conda activate T2Tpolishing
+k=21
+thread=80
+# Construct k-mer db
+cat CC2U_6_1.fastq.gz CC2U_6_2.fastq.gz > CC2U_6.fastq.gz
+meryl count k=${k} threads=${thread} CC2U_6.fastq.gz output reads.meryl
+# Collect histogram for GenomeScope
+meryl histogram reads.meryl > reads.hist
+# Exclude frequency = 1 k-mers
+meryl greater-than 1 reads.meryl output reads.gt1.meryl
+automated-polishing.sh ${thread} 1 CHRR_integrated_TGS.scaff_seqs ccs_all_without_W_0.2.fastq.gz reads.gt1.meryl T2T_polished
+conda deactivate
+```
 ### Polish using Nextpolish2 (installation was not straightforward, but it might have worked, currently the minimap step is running):
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/9.nextpolish2/
