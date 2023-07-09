@@ -207,7 +207,7 @@ meryl greater-than 1 reads.meryl output reads.gt1.meryl
 automated-polishing.sh ${thread} 1 CHRR_integrated_TGS.scaff_seqs ccs_all_without_W_0.2.fastq.gz reads.gt1.meryl T2T_polished
 conda deactivate
 ```
-### Polish using Nextpolish2 (installation was not straightforward, but it might have worked, currently the minimap step is running):
+### Polish using Nextpolish2:
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/9.nextpolish2/
 module load samtools
