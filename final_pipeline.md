@@ -165,13 +165,13 @@ module load samtools
 module load minimap2
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/9.nextpolish2/NextPolish2/target/release/:$PATH
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/hifiasm_updated/yak/:$PATH
-minimap2 -ax map-hifi -t 40 CHRR_integrated.fa ccs_all_without_W.fastq.gz | samtools sort -o hifi.map.sort.bam -
+minimap2 -ax map-hifi -t 40 T2T_polished.iter_1.consensus.fasta ccs_all_without_W_0.2.fastq.gz | samtools sort -o hifi.map.sort.bam -
 samtools index hifi.map.sort.bam
 
 yak count -o k21.yak -k 21 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 yak count -o k31.yak -k 31 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 
-nextPolish2 -t 40 hifi.map.sort.bam CHRR_integrated.fa k21.yak k31.yak > asm.np2.fa
+nextPolish2 -r -t 5 hifi.map.sort.bam T2T_polished.iter_1.consensus.fasta k21.yak k31.yak > asm.np_female_mkf0.2.fa
 ```
 Let's look at the assembly stats and busco at this stage
 ```
