@@ -14,25 +14,7 @@ ccs -j 100 --all /nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_da
 conda deactivate
 ```
 ### Find Female specific kmers:
-We find the female specific kmers from the short reads, and use them to remove putative W-reads from the fastq file (We try mkf=0.1 and 0.2):
-```
-#mkf=0.1
-
-module load bbmap
-
-kmercountexact.sh k=21 in1=CC2U_7_1.fastq in2=CC2U_7_2.fastq out=sfemale_mer_fran.fa mincount=2
-
-bbduk.sh k=21 in=sfemale_mer_fran.fa out=female_specific_mers.fasta ref=CC2U_6_1.fastq,CC2U_6_2.fastq -Xmx300g
-
-bbduk.sh k=21 in=ccs_all.fastq outm=ccs_female_specific_0.1.fastq ref=female_specific_mers.fasta mkf=0.1 -Xmx300g
-
-cat ccs_female_specific_0.1.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_female_specific_0.1.fastq.readsID
-cat ccs_all.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_all.fastq.readsID
-grep -f ccs_female_specific_0.1.fastq.readsID ccs_all.fastq.readsID -v > remaining.list
-module load seqtk
-seqtk subseq ccs_all.fastq remaining.list | gzip - > ccs_all_without_W_0.1.fastq.gz
-```
-
+We find the female specific kmers from the short reads, and use them to remove putative W-reads from the fastq file:
 ```
 #mkf=0.2
 module load bbmap
@@ -60,28 +42,6 @@ Get fasta file from gfa. There are three assemblies (the primary, first haplotyp
 awk '/^S/{print ">"$2;print $3}' artemia_franciscana_all_no_W.asm.bp.p_ctg.gfa > artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
 
 ```
-Let's look at the assembly stats and busco at this stage
-```
-module load assembly-stats/20170224
-assembly-stats artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
-```
-
-Code to run BUSCO:
-```
-module load anaconda3/2022.05
-
-source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
-
-conda activate busco2
-
-busco -f -i artemia_franciscana.asm.bp.p_ctg.fasta -o busco -l arthropoda_odb10 -m geno -c 40
-
-conda deactivate
-```
-Add BUSCO score here:
-```
-BUSCO score
-```
 ### Purge haplotigs 
 Purging duplicates with the short reads:
 ```
@@ -101,15 +61,6 @@ bwa mem -t 60 A_franciscana.genome.fasta CC2U_7_1_paired.fastq CC2U_7_2_paired.f
 /nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/purge_dups -2 -T cutoffs -c TX.base.cov A_franciscana.genome.fasta.split.self.paf.gz > dups.bed 2> purge_dups.log
 
 /nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/get_seqs -e dups.bed A_franciscana.genome.fasta
-```
-Let's look at the assembly stats and busco at this stage too.
-Add stats here:
-```
-Stats
-```
-Add BUSCO score here.
-```
-BUSCO score
 ```
 ### Scaffolding using ntLink+ARCS
 ```
@@ -179,7 +130,7 @@ module load anaconda3/2022.05
 source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
 conda activate TGScloser
 sed '/^>/ s/,.*//' CHRR_integrated.fa > CHRR_integrated_clean.fa
-tgsgapcloser --scaff CHRR_integrated_clean.fa --reads ccs_all_without_W_0.1.fastq.gz --output CHRR_integrated_TGS --thread 80 --ne --tgstype pb
+tgsgapcloser --scaff CHRR_integrated_clean.fa --reads ccs_all_without_W_0.2.fastq.gz --output CHRR_integrated_TGS --thread 80 --ne --tgstype pb
 conda deactivate
 ```
 ### Polish with racon + merfin
@@ -221,4 +172,26 @@ yak count -o k21.yak -k 21 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*
 yak count -o k31.yak -k 31 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 
 nextPolish2 -t 40 hifi.map.sort.bam CHRR_integrated.fa k21.yak k31.yak > asm.np2.fa
+```
+Let's look at the assembly stats and busco at this stage
+```
+module load assembly-stats/20170224
+assembly-stats artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
+```
+
+Code to run BUSCO:
+```
+module load anaconda3/2022.05
+
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
+
+conda activate busco2
+
+busco -f -i artemia_franciscana.asm.bp.p_ctg.fasta -o busco -l arthropoda_odb10 -m geno -c 40
+
+conda deactivate
+```
+Add BUSCO score here:
+```
+BUSCO score
 ```
