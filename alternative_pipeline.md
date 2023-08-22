@@ -29,6 +29,10 @@ module load bbmap
 kmercountexact.sh k=31 in1=CC2U_7_1.fastq.gz in2=CC2U_7_2.fastq.gz out=sfemale_mer_fran.fa mincount=2
 
 bbduk.sh k=31 in=sfemale_mer_fran.fa out=female_specific_mers_31.fasta ref=CC2U_6_1.fastq.gz,CC2U_6_2.fastq.gz -Xmx300g
+
+bbduk.sh k=31 in=artemia_franciscana.asm.bp.p_ctg.fasta outm=female_specific_scaffolds_mkf_0.2.fasta ref=female_specific_mers_31.fasta mkf=0.2 -Xmx98g
+grep "p" female_specific_scaffolds_mkf_0.2.fasta | sed 's/>//' > female_specific_scaffolds_mkf_0.2.readsID
+perl -ne 'if(/^>(\S+)/){$c=!$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' female_specific_scaffolds_mkf_0.2.readsID artemia_franciscana.asm.bp.p_ctg.fasta > artemia_franciscana.asm.bp_no_W_mkf0.2.p_ctg.fasta
 ```
 
 ### Purge haplotigs 
