@@ -175,7 +175,7 @@ source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2023.04/activate_anaconda3_2
 conda activate redundans
 redundans.py -v -i SRR6980924_1_fixed.fastq SRR6980924_2_fixed.fastq -f purged_with_scaffolded_renamed.fasta -o run_short-scaffolding -t 60 --limit 1 --noreduction --nogapclosing -j 10 --nocleaning
 ```
-
+## Coverage analysis to identify S0
 ### Scaffold using the franciscana linkage map
 If I remember correctly, we would need to remove Ns from the start and ends of sequences
 ```
