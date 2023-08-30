@@ -253,6 +253,8 @@ Modify linkage map to prevent the splitting of S0 region:
 cat aligned_paired.sam | cut -f1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 > aligned_paired_no_XA.sam
 grep LG6 aligned_paired_no_XA.sam | cut -f1 > diff_region_markers.txt
 grep -wvf diff_region_markers.txt linkage_map_modified_no_XB1.tsv > new_linkage_map.tsv
+#find the location and markers of S0 using the following command and add it to the new linkage map manually
+awk '$4 == "LG6"' ./output_paired_no_split/CHRR_linkage_map.tsv | cut -f1,2,3 > S0_markers.txt
 ```
 Run chromonomer with splitting and rescaffolding:
 ```
