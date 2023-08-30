@@ -187,6 +187,46 @@ grep -vw "XS:i" CC2U_7.sam > CC2U_7_unique.sam
 soap.coverage -sam -cvg -i CC2U_6_unique.sam -onlyuniq -p 100 -refsingle scaffolds.fa -window CC2U_6_window 10000
 soap.coverage -sam -cvg -i CC2U_7_unique.sam -onlyuniq -p 100 -refsingle scaffolds.fa -window CC2U_7_window 10000
 ```
+Identify S0 scaffolds from female/male coverage with the following python code:
+```
+#Coverage scaffolds
+
+artemia_male_scaf=pd.read_csv("CC2U_6_window_redundans_all_coverage_S0",sep="\s+",header=None)
+artemia_female_scaf=pd.read_csv("CC2U_7_window_redundans_all_coverage_S0",sep="\s+",header=None)
+artemia_male_scaf['log2fsm']=np.log2((artemia_female_scaf[3]+0.001)/(artemia_male_scaf[3]+0.001))#artemia_male[3]/artemia_female[3]
+artemia_scaf=artemia_male_scaf
+artemia_scaf=artemia_scaf.groupby([0]).median().reset_index()
+artemia_scaf[artemia_scaf['log2fsm']<np.median(artemia_scaf['log2fsm'])-0.5][0].to_csv('artemia_Z_scaf_rar_all.txt',index=False)
+```
+Scaffold the S0 region first:
+```
+grep LG6 linkage_map_modified_no_XB1.tsv > LG6_map.txt
+cat LG6_map.txt | cut -f2 > LG6_markers.txt
+perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' LG6_markers.txt markers_1.fa > markers_LG6_1.fa
+perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' LG6_markers.txt markers_2.fa > markers_LG6_2.fa
+perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' artemia_Z_scaf_rar.txt scaffolds.fa  > Artemia_Z_scaf_rar.fasta
+perl -ne 'if(/^>(\S+)/){$c=!$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' artemia_Z_scaf_rar.txt scaffolds.fa > purged_without_differentiated_region.fasta
+```
+As some of the S0 scaffolds had regions with higher coverage that appear to be misassembled, we break the S0 scaffolds into contigs:
+perl /nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V3/9.disable_post_join/round2/round_3/purge_haplotigs/merge_arcs_rascaf/redundans/redundans_limit/chromonomer/Genome_assembly_with_diff/GenoToolBox/SeqTools/BreakScaffolds -f Artemia_Z_scaf_rar.fasta -o broken.fasta -n 100
+```
+Map LG6 markers to the contigs:
+```
+module load bwa
+bwa index broken.fasta.contigs.fasta
+bwa mem -M -t 50 broken.fasta.contigs.fasta markers_LG6_1.fa markers_LG6_2.fa > aligned_paired_broken_LG6_markers.sam
+```
+generate the agp file:
+```
+module load python/2.7
+python /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/scripts/fasta2agp.py --fasta broken.fasta.contigs.fasta > LG6_broken.agp
+```
+Scaffold using Chromonomer:
+```
+mkdir output_paired_diff_LG6_markers_broken
+/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p LG6_map.txt --out_path output_paired_diff_LG6_markers_broken --alns aligned_paired_broken_LG6_markers.sam -a LG6_broken.agp --fasta broken.fasta.contigs.fasta
+```
+
 
 ### Scaffold using the franciscana linkage map
 If I remember correctly, we would need to remove Ns from the start and ends of sequences
