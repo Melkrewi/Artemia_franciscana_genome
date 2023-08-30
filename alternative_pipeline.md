@@ -13,28 +13,35 @@ conda activate pbccs
 ccs -j 100 --all /nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/r64046_20230525_135433_C02/m64046_230528_074955.subreads.bam ccs_all.fastq.gz
 conda deactivate
 ```
-### Assemble the reads using hifiasm:
+### Find Female specific kmers:
+We find the female specific kmers from the short reads, and use them to remove putative W-reads from the fastq file:
 ```
-export PATH=/nfs/scistore18/vicosgrp/melkrewi/artemia_franciscana_genome_data/hifiasm_updated/hifiasm-0.19.5/:$PATH
-hifiasm -t 100 --hg-size 1g --n-hap 2 -s 0.75 -o artemia_franciscana.asm ccs_all.fastq.gz
-awk '/^S/{print ">"$2;print $3}' artemia_franciscana.asm.bp.p_ctg.gfa > artemia_franciscana.asm.bp.p_ctg.fasta
-```
-### Find Female specific scaffolds:
-We find the female specific kmers from the short reads, and use them to remove putative scaffolds from the assembly:
-```
-module load java
-
+#mkf=0.2
 module load bbmap
 
-kmercountexact.sh k=31 in1=CC2U_7_1.fastq.gz in2=CC2U_7_2.fastq.gz out=sfemale_mer_fran.fa mincount=2
+kmercountexact.sh k=21 in1=CC2U_7_1.fastq in2=CC2U_7_2.fastq out=sfemale_mer_fran.fa mincount=2
 
-bbduk.sh k=31 in=sfemale_mer_fran.fa out=female_specific_mers_31.fasta ref=CC2U_6_1.fastq.gz,CC2U_6_2.fastq.gz -Xmx300g
+bbduk.sh k=21 in=sfemale_mer_fran.fa out=female_specific_mers.fasta ref=CC2U_6_1.fastq,CC2U_6_2.fastq -Xmx300g
 
-bbduk.sh k=31 in=artemia_franciscana.asm.bp.p_ctg.fasta outm=female_specific_scaffolds_mkf_0.2.fasta ref=female_specific_mers_31.fasta mkf=0.2 -Xmx98g
-grep "p" female_specific_scaffolds_mkf_0.2.fasta | sed 's/>//' > female_specific_scaffolds_mkf_0.2.readsID
-perl -ne 'if(/^>(\S+)/){$c=!$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' female_specific_scaffolds_mkf_0.2.readsID artemia_franciscana.asm.bp.p_ctg.fasta > artemia_franciscana.asm.bp_no_W_mkf0.2.p_ctg.fasta
+bbduk.sh k=21 in=ccs_all.fastq outm=ccs_female_specific_0.2.fastq ref=female_specific_mers.fasta mkf=0.2 -Xmx300g
+
+cat ccs_female_specific_0.2.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_female_specific_0.2.fastq.readsID
+cat ccs_all.fastq | awk 'NR%4==1' | sed 's/@//' > ccs_all.fastq.readsID
+grep -f ccs_female_specific_0.2.fastq.readsID ccs_all.fastq.readsID -v > remaining.list
+module load seqtk
+seqtk subseq ccs_all.fastq remaining.list | gzip - > ccs_all_without_W_0.2.fastq.gz
 ```
 
+### Assemble the reads using hifiasm:
+```
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
+hifiasm -t 100 --hg-size 1g --n-hap 4 -r 5 -s 0.4 -N 150 -o artemia_franciscana_all_no_W.asm ccs_all_without_W.fastq.gz
+```
+Get fasta file from gfa. There are three assemblies (the primary, first haplotype and second haplotype, lets run three commands, 1 for each). Make sure you change the names accordingly:
+```
+awk '/^S/{print ">"$2;print $3}' artemia_franciscana_all_no_W.asm.bp.p_ctg.gfa > artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
+
+```
 ### Purge haplotigs 
 Purging duplicates with the short reads:
 ```
