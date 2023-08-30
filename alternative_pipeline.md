@@ -198,7 +198,7 @@ artemia_scaf=artemia_male_scaf
 artemia_scaf=artemia_scaf.groupby([0]).median().reset_index()
 artemia_scaf[artemia_scaf['log2fsm']<np.median(artemia_scaf['log2fsm'])-0.5][0].to_csv('artemia_Z_scaf_rar_all.txt',index=False)
 ```
-Scaffold the S0 region first:
+Scaffold the S0 region first using the linkage map:
 ```
 grep LG6 linkage_map_modified_no_XB1.tsv > LG6_map.txt
 cat LG6_map.txt | cut -f2 > LG6_markers.txt
@@ -227,20 +227,39 @@ Scaffold using Chromonomer:
 mkdir output_paired_diff_LG6_markers_broken
 /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p LG6_map.txt --out_path output_paired_diff_LG6_markers_broken --alns aligned_paired_broken_LG6_markers.sam -a LG6_broken.agp --fasta broken.fasta.contigs.fasta
 ```
-
-
-### Scaffold using the franciscana linkage map
-If I remember correctly, we would need to remove Ns from the start and ends of sequences
+We add the resulting scaffolds to the genome:
 ```
-/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/quickmerge/KPI_and_bmc_2/purge/round2/chromonomer/seqkit -is replace -p "^n+|n+$" -r "" purged.fa > purged_clean.fa
+cat ../output_paired_diff_LG6_markers_broken/CHRR_integrated.fa > Z_diff.fasta
+cat ../purged_without_differentiated_region.fasta Z_diff.fasta > purged_with_differentiated_region.fasta
 ```
-Then we generate an agp file:
+Then we do two rounds of scaffolding using Chromonomer, the first to identify the location of the differentiated region without splitting, and then we modify the agp accordingly and run the second round with splittling and rescaffolding to allow for fixing missasemblies:
+```
+module load bwa
+module load samtools
+bwa index purged_with_differentiated_region.fasta
+bwa mem -M -t 50 purged_with_differentiated_region.fasta markers_1.fa markers_2.fa > aligned_paired.sam
+```
 ```
 module load python/2.7
-python /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/scripts/fasta2agp.py --fasta purged_clean.fa > test.agp
+python /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/scripts/fasta2agp.py --fasta purged_with_differentiated_region.fasta > whole_genome.agp
 ```
-Map the markers to the assembly:
-
+Run chromonomer:
+```
+mkdir output_paired_no_split
+/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map_modified_no_XB1.tsv --out_path output_paired_no_split --alns aligned_paired.sam -a whole_genome.agp --fasta purged_with_differentiated_region.fasta --disable_splitting
+```
+Modify linkage map to prevent the splitting of S0 region:
+```
+cat aligned_paired.sam | cut -f1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 > aligned_paired_no_XA.sam
+grep LG6 aligned_paired_no_XA.sam | cut -f1 > diff_region_markers.txt
+grep -wvf diff_region_markers.txt linkage_map_modified_no_XB1.tsv > new_linkage_map.tsv
+```
+Run chromonomer with splitting and rescaffolding:
+```
+mkdir output_paired_split
+/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p new_linkage_map.tsv --out_path output_paired_split --alns aligned_paired.sam -a whole_genome.agp --fasta purged_with_differentiated_region.fasta --rescaffold 
+```
+### getting the markers:
 I wrote some commands to clean the excel file with the markers to make life easier. I used csvkit to convert the xlsx file to csv (pip install csvkit) :
 ```
 module load python
@@ -251,29 +270,7 @@ tr -d ',' < slaf_markers.csv | sed -n '/>Marker/,+1p' > slaf_markers_clean.csv
 sed -E '/>/! s/^(.{100}).*/\1/' slaf_markers_clean.csv > markers_1.fa
 sed -Ee 's/^.*(.{101})$/\1/' slaf_markers_clean.csv > markers_2.fa
 ```
-mapping:
-```
-module load bwa
 
-module load samtools
-
-bwa index purged_clean.fa
-
-bwa mem -M -t 30 purged_clean.fa markers_first100.fa markers_last100_rc.fa > aligned_paired.sam
-```
-Then scaffold using chromonomer:
-Initially, I think we should try without rescaffold. The modified linkage_map is in the folder below. Note: You need to make the output folder before running. (output_paired)
-```
-cp /nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/ntlinks+arks/chromonomer/linkage_map_modified_no_XB1.tsv .
-```
-```
-module load bwa
-
-module load samtools
-
-mkdir output_paired
-/nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p linkage_map_modified_no_XB1.tsv --out_path output_paired --alns aligned_paired.sam -a test.agp --fasta purged.fa.k32.w100.z1000.ntLink.scaffolds_c2_m8-10000_cut250_k20_r0.05_e30000_z1000_l2_a0.8.scaffolds_clean.fa
-```
 ### Gap filling using TGSgapcloser 
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V1/3.TGSgapfiller/mkf0.2_female/
@@ -324,26 +321,4 @@ yak count -o k21.yak -k 21 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*
 yak count -o k31.yak -k 31 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 
 nextPolish2 -r -t 5 hifi.map.sort.bam T2T_polished.iter_1.consensus.fasta k21.yak k31.yak > asm.np_female_mkf0.2.fa
-```
-Let's look at the assembly stats and busco at this stage
-```
-module load assembly-stats/20170224
-assembly-stats artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
-```
-
-Code to run BUSCO:
-```
-module load anaconda3/2022.05
-
-source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
-
-conda activate busco2
-
-busco -f -i artemia_franciscana.asm.bp.p_ctg.fasta -o busco -l arthropoda_odb10 -m geno -c 40
-
-conda deactivate
-```
-Add BUSCO score here:
-```
-BUSCO score
 ```
