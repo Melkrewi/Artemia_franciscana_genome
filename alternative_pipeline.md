@@ -35,12 +35,8 @@ seqtk subseq ccs_all.fastq remaining.list | gzip - > ccs_all_without_W_0.2.fastq
 ### Assemble the reads using hifiasm:
 ```
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/63.hifiasm_updated/hifiasm-0.19.4/:$PATH
-hifiasm -t 100 --hg-size 1g --n-hap 4 -r 5 -s 0.4 -N 150 -o artemia_franciscana_all_no_W.asm ccs_all_without_W.fastq.gz
-```
-Get fasta file from gfa. There are three assemblies (the primary, first haplotype and second haplotype, lets run three commands, 1 for each). Make sure you change the names accordingly:
-```
-awk '/^S/{print ">"$2;print $3}' artemia_franciscana_all_no_W.asm.bp.p_ctg.gfa > artemia_franciscana_all_no_W.asm.bp.p_ctg.fasta
-
+hifiasm -t 100 --hg-size 1g --n-hap 4 -r 5 -s 0.7 -N 150 -o artemia_franciscana_allnoWmkf02.asm ccs_all_without_W_0.2.fastq.gz
+awk '/^S/{print ">"$2;print $3}' artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.gfa > artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta
 ```
 ### Purge haplotigs 
 Purging duplicates with the short reads:
@@ -50,21 +46,50 @@ module load bwa
 module load samtools
 module load python/3.7
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/minimap/minimap2/minimap2:$PATH
-bwa index A_franciscana.genome.fasta
-bwa mem -t 60 A_franciscana.genome.fasta CC2U_7_1_paired.fastq CC2U_7_2_paired.fastq | samtools view -b -o - > CC2U_7.bam
-/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/ngscstat CC2U_7.bam # The program will generate two/three outputs, TX.stat and TX.base.cov which functions the same way as PB.stat and PB.base.cov respectively.  
+bwa index artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta
+bwa mem -t 80 artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta CC2U_7_1.fastq.gz CC2U_7_2.fastq.gz | samtools view -b -o - > CC2U_7.bam
+/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/ngscstat CC2U_7.bam
 /nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/calcuts TX.stat > cutoffs 2>calcults.log
-
-/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/split_fa A_franciscana.genome.fasta  > A_franciscana.genome.fasta.split
-/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/minimap/minimap2/minimap2 -t 40 -xasm5 -DP A_franciscana.genome.fasta.split A_franciscana.genome.fasta.split | gzip -c - > A_franciscana.genome.fasta.split.self.paf.gz
-
-/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/purge_dups -2 -T cutoffs -c TX.base.cov A_franciscana.genome.fasta.split.self.paf.gz > dups.bed 2> purge_dups.log
-
-/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/get_seqs -e dups.bed A_franciscana.genome.fasta
+/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/split_fa artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta > artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta.split
+/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/minimap/minimap2/minimap2 -t 80 -xasm5 -DP artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta.split artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta.split | gzip -c - > artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta.split.self.paf.gz
+/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/purge_dups -2 -T cutoffs -c TX.base.cov  artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta.split.self.paf.gz > dups.bed 2> purge_dups.log
+/nfs/scistore18/vicosgrp/melkrewi/Project_confirm_genome_assembly/purge/purge_dups/bin/get_seqs -e dups.bed artemia_franciscana_allnoWmkf02.asm.bp.p_ctg.fasta
 ```
-### Scaffolding using ntLink+ARCS
+### Scaffolding using Rascaf
+First map the male RNA reads to the genome:
 ```
-export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/
+module load samtools
+module load hisat2
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V3/9.disable_post_join/round2/round_3/purge_haplotigs/rascaf/
+mkdir hisat2
+hisat2-build purged.fa genome_index
+for i in *_1.fastq
+do
+    prefix=$(basename $i _1.fastq)
+    hisat2 --phred33 -p 50 --novel-splicesite-outfile hisat2/${prefix}_splicesite.txt -S hisat2/${prefix}_accepted_hits.sam -x genome_index -1 ${prefix}_1.fastq -2 ${prefix}_2.fastq --rna-strandness RF
+    samtools view -@ 25 -bS -o hisat2/${prefix}_accepted_hits.bam hisat2/${prefix}_accepted_hits.sam
+    samtools sort -@ 25 -o hisat2/${prefix}_accepted_hits.sorted.bam hisat2/${prefix}_accepted_hits.bam
+done
+```
+Then scaffold the assembly as follows:
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V3/9.disable_post_join/round2/round_3/purge_haplotigs/rascaf/
+
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/project_w/december_2021/scaffod_assembly/rescaf/rascaf/:$PATH
+
+rascaf -b ./hisat2/60541_accepted_hits.sorted.bam -o 60541_rascaf -f purged.fa
+
+rascaf -b ./hisat2/60542_accepted_hits.sorted.bam -o 60542_rascaf -f purged.fa
+
+rascaf -b ./hisat2/60543_accepted_hits.sorted.bam -o 60543_rascaf -f purged.fa
+
+rascaf -b ./hisat2/60544_accepted_hits.sorted.bam -o 60544_rascaf -f purged.fa
+
+rascaf-join -r 60541_rascaf.out -r 60542_rascaf.out -r 60543_rascaf.out -r 60544_rascaf.out -o assembly_scaffold_males
+```
+### Scaffolding using longstitch
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/vbett/Artemia_hififinal/genome_mkf0.2
 module load samtools
 module load minimap2
 module load abyss
@@ -73,8 +98,82 @@ export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/links/bin/:$PA
 export PATH=/nfs/scistore18/vicosgrp/melkrewi/panorpa_assembly_v2/12.ARKS/arcs-1.2.5/::$PATH
 module load anaconda3/2023.04
 source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2023.04/activate_anaconda3_2023.04.txt
-conda activate longstitch_new
-/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/longstitch-1.0.4/longstitch ntLink-arks draft=purged reads=ccs_all_without_W G=1g t=100 k_arks=20 j=0.05 c=2 l=2 a=0.8
+source activate /nfs/scistore18/vicosgrp/melkrewi/.conda/envs/longstitch_new
+/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_assembly/7.longstitch/longstitch-1.0.4/longstitch ntLink-arks draft=purged reads=ccs_all_without_W_0.2 G=1g t=100 k_arks=20 j=0.05 c=2 l=2 a=0.8
+```
+### Identify and keep the merges that appear in both approaches:
+First map the two scaffolded assemblies to the purged assembly using minimap2:
+```
+export PATH=/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/minimap/minimap2/minimap2:$PATH
+/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/minimap/minimap2/minimap2 -x asm5 -t 60 assembly_scaffold_males.fa purged.fa > rascaf_vs_purged.paf
+/nfs/scistore18/vicosgrp/melkrewi/Improved_genome_project/minimap/minimap2/minimap2 -x asm5 -t 60 purged.fa.k32.w100.z1000.ntLink.scaffolds_c2_m8-10000_cut250_k20_r0.05_e30000_z1000_l2_a0.8.scaffolds.fa purged.fa > longstitch_vs_purged.paf
+```
+Then get the consensus of the merges using this python code:
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy
+import seaborn as sns
+import os
+rascaf=pd.read_csv("rascaf_vs_purged.paf",sep="\s+",header=None)
+rascaf=rascaf.sort_values(10, ascending=False).drop_duplicates([0])
+rascaf=rascaf[rascaf[10]>=0.3*rascaf[1]]
+longstitch=pd.read_csv("longstitch_vs_purged.paf",sep="\s+",header=None)
+longstitch=longstitch.sort_values(10, ascending=False).drop_duplicates([0])
+longstitch=longstitch[longstitch[10]>=0.3*longstitch[1]]
+longstitch_vs_rascaf=pd.merge(rascaf,longstitch,on=0)
+longstitch_vs_rascaf=pd.merge(rascaf,longstitch,on=0)[[0,'1_x','5_x','6_x','10_x','5_y','6_y','10_y']].drop_duplicates([0,'1_x','5_x','6_x','5_y','6_y'])
+longstitch_vs_rascaf_results=longstitch_vs_rascaf[longstitch_vs_rascaf.duplicated(['5_x','5_y'], keep=False)].sort_values('5_y')
+d = []
+for i in np.arange(0,len(longstitch_vs_rascaf_results[0])):
+    ref=longstitch_vs_rascaf_results[longstitch_vs_rascaf_results[0]==longstitch_vs_rascaf_results.iloc[i][0]]
+    d.append(
+        {
+            'contigs': ','.join(longstitch_vs_rascaf_results[(longstitch_vs_rascaf_results['5_x']==ref['5_x'].iloc[0])&(longstitch_vs_rascaf_results['5_y']==ref['5_y'].iloc[0])][0].to_list()),
+            'rascaf_scaffold': longstitch_vs_rascaf_results[(longstitch_vs_rascaf_results['5_x']==ref['5_x'].iloc[0])&(longstitch_vs_rascaf_results['5_y']==ref['5_y'].iloc[0])]['5_x'].iloc[0],
+            'longstitch_scaffold':  longstitch_vs_rascaf_results[(longstitch_vs_rascaf_results['5_x']==ref['5_x'].iloc[0])&(longstitch_vs_rascaf_results['5_y']==ref['5_y'].iloc[0])]['5_y'].iloc[0]
+        }
+    )
+final_results=pd.DataFrame(d).drop_duplicates()
+final_results.to_csv('final_results_longstitch_vs_rascaf.txt',sep='\t',index=False)
+```
+The resulting scaffolds were generated using ragtag with the following commands:
+```
+module load samtools
+module load anaconda3/2022.05
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2022.05/activate_anaconda3_2022.05.txt
+conda activate ragtag
+for i in {2..689}
+do
+ cat final_results_longstitch_vs_rascaf.txt | sed "${i}q;d" | cut -f1 | sed 's/,/\n/g' > $i.contig.txt
+ cat final_results_longstitch_vs_rascaf.txt | sed "${i}q;d" | cut -f2 > $i.reference.txt
+ perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i.contig.txt purged.fa > $i.contig.fasta
+ perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i.reference.txt assembly_scaffold_males.fa > $i.reference.fasta
+ ragtag.py scaffold $i.reference.fasta $i.contig.fasta -t 40 -o ./$i.ragtag
+ cat $i.contig.fasta >> pre_scaffolded_sequences.fasta
+ cat ./$i.ragtag/ragtag.scaffold.fasta >> scaffolded_sequences.fasta
+ rm $i.contig.txt
+ rm $i.reference.txt
+ rm $i.contig.fasta
+ rm $i.reference.fasta
+ rm -r $i.ragtag
+ rm $i.contig.fasta.fai
+ echo $i
+done
+perl fasta_len.pl > pre_scaffolded_sequences.fasta.len
+cat pre_scaffolded_sequences.fasta.len | cut -f1 > remove.list
+perl -ne 'if(/^>(\S+)/){$c=!$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' remove.list purged.fa > purged_without_scaffolded.fasta
+cat purged_without_scaffolded.fasta scaffolded_sequences.fasta > purged_with_scaffolded.fasta
+awk '/^>/{print ">scaffold_" ++i; next}{print}' < purged_with_scaffolded.fasta > purged_with_scaffolded_renamed.fasta
+```
+### Scaffolding using redundans and mate pairs:
+```
+export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V3/9.disable_post_join/round2/round_3/purge_haplotigs/merge_arcs_rascaf/redundans/redundans_limit
+module load anaconda3/2023.04
+source /mnt/nfs/clustersw/Debian/bullseye/anaconda3/2023.04/activate_anaconda3_2023.04.txt
+conda activate redundans
+redundans.py -v -i SRR6980924_1_fixed.fastq SRR6980924_2_fixed.fastq -f purged_with_scaffolded_renamed.fasta -o run_short-scaffolding -t 60 --limit 1 --noreduction --nogapclosing -j 10 --nocleaning
 ```
 
 ### Scaffold using the franciscana linkage map
