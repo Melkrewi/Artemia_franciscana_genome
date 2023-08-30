@@ -208,6 +208,7 @@ perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' artemia_Z_sc
 perl -ne 'if(/^>(\S+)/){$c=!$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' artemia_Z_scaf_rar.txt scaffolds.fa > purged_without_differentiated_region.fasta
 ```
 As some of the S0 scaffolds had regions with higher coverage that appear to be misassembled, we break the S0 scaffolds into contigs:
+```
 perl /nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V3/9.disable_post_join/round2/round_3/purge_haplotigs/merge_arcs_rascaf/redundans/redundans_limit/chromonomer/Genome_assembly_with_diff/GenoToolBox/SeqTools/BreakScaffolds -f Artemia_Z_scaf_rar.fasta -o broken.fasta -n 100
 ```
 Map LG6 markers to the contigs:
