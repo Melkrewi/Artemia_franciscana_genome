@@ -261,18 +261,6 @@ Run chromonomer with splitting and rescaffolding:
 mkdir output_paired_split
 /nfs/scistore18/vicosgrp/melkrewi/project_save_the_genome_project/chromonomer/chromonomer-1.13/chromonomer -p new_linkage_map.tsv --out_path output_paired_split --alns aligned_paired.sam -a whole_genome.agp --fasta purged_with_differentiated_region.fasta --rescaffold 
 ```
-### getting the markers:
-I wrote some commands to clean the excel file with the markers to make life easier. I used csvkit to convert the xlsx file to csv (pip install csvkit) :
-```
-module load python
-wget https://ars.els-cdn.com/content/image/1-s2.0-S0044848621003549-mmc3.xlsx
-in2csv 1-s2.0-S0044848621003549-mmc3.xlsx > slaf_markers.csv
-sed -i '1,1d' slaf_markers.csv
-tr -d ',' < slaf_markers.csv | sed -n '/>Marker/,+1p' > slaf_markers_clean.csv
-sed -E '/>/! s/^(.{100}).*/\1/' slaf_markers_clean.csv > markers_1.fa
-sed -Ee 's/^.*(.{101})$/\1/' slaf_markers_clean.csv > markers_2.fa
-```
-
 ### Gap filling using TGSgapcloser 
 ```
 export TMPDIR=/nfs/scistore18/vicosgrp/melkrewi/Artemia_franciscana_genome_V1/3.TGSgapfiller/mkf0.2_female/
@@ -323,4 +311,16 @@ yak count -o k21.yak -k 21 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*
 yak count -o k31.yak -k 31 -b 37 -t 40 <(zcat CC2U_6_*.fastq.gz) <(zcat CC2U_6_*.fastq.gz)
 
 nextPolish2 -r -t 5 hifi.map.sort.bam T2T_polished.iter_1.consensus.fasta k21.yak k31.yak > asm.np_female_mkf0.2.fa
+```
+
+### getting the markers used in the analysis:
+I wrote some commands to clean the excel file with the markers to make life easier. I used csvkit to convert the xlsx file to csv (pip install csvkit) :
+```
+module load python
+wget https://ars.els-cdn.com/content/image/1-s2.0-S0044848621003549-mmc3.xlsx
+in2csv 1-s2.0-S0044848621003549-mmc3.xlsx > slaf_markers.csv
+sed -i '1,1d' slaf_markers.csv
+tr -d ',' < slaf_markers.csv | sed -n '/>Marker/,+1p' > slaf_markers_clean.csv
+sed -E '/>/! s/^(.{100}).*/\1/' slaf_markers_clean.csv > markers_1.fa
+sed -Ee 's/^.*(.{101})$/\1/' slaf_markers_clean.csv > markers_2.fa
 ```
