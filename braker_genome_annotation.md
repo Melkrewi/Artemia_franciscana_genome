@@ -4,30 +4,23 @@
 
 *module load STAR*
 
-*module load hisat2*
-
 *module load BRAKER/2.1.6*
 
 *module load samtools*
 
 ## Actual alignment of RNA reads to the genome
 
-### We include option --dta in order to report alignments tailored for transcript assemblers
-
-`srun hisat2-build genome_clean_sorted.fasta genome_clean_sorted_hisat2`
+`STAR --runMode genomeGenerate --genomeDir STARgenome --runThreadN 50 --genomeFastaFiles asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa`
 
 ```
-for base in $(ls /nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_dir/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
+for base in $(ls /nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
 
 do
+srun STAR --twopassMode Basic --genomeDir STARgenome --runThreadN 50 --readFilesIn "${base}_1.fastq" "${base}_2.fastq" --outFileNamePrefix "${base}_RNAalignment_" --outSAMtype BAM Unsorted
 
-srun hisat2 -q -x genome_clean_sorted_hisat2 -1 "${base}_1.fastq" -2 "${base}_2.fastq" -p 30 --dta --qc-filter -S "${base}_hisatr_alignment.sam"
+samtools sort -@ 50 -T ./ -o "${base}_RNAalignment_Aligned.sorted.bam" "${base}_RNAalignment_Aligned.out.bam"
 
-samtools view -bS "${base}_hisatr_alignment.sam" > "${base}_hisatr_alignment.bam"
-
-srun samtools sort -o "${base}_hisatr_alignment_sorted.bam" "${base}_hisatr_alignment.bam"
-
-samtools index "${base}_hisatr_alignment_sorted.bam"
+samtools index -@ 50 "${base}_RNAalignment_Aligned.sorted.bam"
 
 done
 ```
@@ -42,22 +35,15 @@ done
 *module load RepeatMasker*
 
 ```
-srun BuildDatabase -name Afranciscana_genomeclean -engine ncbi genome_clean_sorted.fasta
+BuildDatabase -name asm_np_female_mkf02_01_09_2023_renamed_final -engine ncbi asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa
 
-srun RepeatModeler -threads 60 -database Afranciscana_genomeclean -engine ncbi
+RepeatModeler -threads 100 -database asm_np_female_mkf02_01_09_2023_renamed_final -engine ncbi
+
 ```
 ## We then annotate the repeats using the library databases created above
 ```
-srun RepeatMasker -pa 60 -e ncbi -lib Afranciscana_genomeclean-families.fa -xsmall -dir Afran_maskallrepeats genome_clean_sorted.fasta
+RepeatMasker -pa 60 -lib asm_np_female_mkf02_01_09_2023_renamed_final-families.fa -xsmall asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa
 ```
-# We then run genome annotation using BRAKER 
-
-This is detailed in this link (https://github.com/Gaius-Augustus/BRAKER)
-
-*module load BRAKER/2.1.6*
-
-`srun braker.pl --genome=genome_clean_sorted.fasta.masked --bam=60541_hisatr_alignment_sorted.bam,60542_hisatr_alignment_sorted.bam,60543_hisatr_alignment_sorted.bam,60544_hisatr_alignment_sorted.bam,60545_hisatr_alignment_sorted.bam,60546_hisatr_alignment_sorted.bam,60547_hisatr_alignment_sorted.bam,60548_hisatr_alignment_sorted.bam -gff3 --useexisting --species=Artemia_francisc --cores=30 --min_contig=5000 --softmasking --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_dir/braker_output`
-
 # We can also run genome annotation with RNA bam and protein sequences and compare the results
 
 ## First we download all arthropoda protein sequences 
@@ -74,12 +60,12 @@ Let's load necessary modules
 
 
 ```
-module load java/8 bamtools/2.5.2 lpsolve/5.5.2.11 perl/5.34.0 genemark
-module load GSL/2.7 htslib/1.13 augustus/3.4.0 python/3.9.7 BRAKER/2.1.6
-module load ProtHint/2.6.0
+module load java bamtools/2.5.2 lpsolve perl genemark
+module load GSL htslib augustus/3.4.0 python/3.9.7 BRAKER/2.1.6
+module load ProtHint
 ```
 
-`prothint.py genome_clean_sorted_masked.fasta proteins.fasta --workdir ProhintDir --threads 50`
+`prothint.py asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa.masked proteins.fasta --workdir ProhintDirmasked --threads 50`
 
 This produces 3 output files 
 
@@ -93,11 +79,11 @@ This is detailed in this link (https://github.com/gatech-genemark/ProtHint#prote
 
 ## We then run braker using both RNA bam files and protein hint
 
-`srun braker.pl --genome=genome_clean_sorted.fasta.masked --bam=60541_hisatr_alignment_sorted.bam,60542_hisatr_alignment_sorted.bam,60543_hisatr_alignment_sorted.bam,60544_hisatr_alignment_sorted.bam,60545_hisatr_alignment_sorted.bam,60546_hisatr_alignment_sorted.bam,60547_hisatr_alignment_sorted.bam,60548_hisatr_alignment_sorted.bam -gff3 --useexisting --species=Artemia_francisca --etpmode --cores=30 --min_contig=5000 --softmasking --hints=prothint_augustus.gff --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_all/braker_outputetp`
+`braker.pl --species=artfrannewhifiremasked --genome=asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa.masked --bam=60541_RNAalignment_Aligned.sorted.bam,60542_RNAalignment_Aligned.sorted.bam,60543_RNAalignment_Aligned.sorted.bam,60544_RNAalignment_Aligned.sorted.bam,60545_RNAalignment_Aligned.sorted.bam,60546_RNAalignment_Aligned.sorted.bam,60547_RNAalignment_Aligned.sorted.bam,60548_RNAalignment_Aligned.sorted.bam -gff3 --useexisting --etpmode --hints=/nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/ProhintDirmasked/prothint_augustus.gff --cores=30 --softmasking --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/braker_staralign`
 
 ### It is recommended to run braker at least two times in order to reduce possibility of false positives. Therefore we will run above script but we will include the hint output of the braker
 
-`srun braker.pl --genome=genome_clean_sorted.fasta.masked --bam=60541_hisatr_alignment_sorted.bam,60542_hisatr_alignment_sorted.bam,60543_hisatr_alignment_sorted.bam,60544_hisatr_alignment_sorted.bam,60545_hisatr_alignment_sorted.bam,60546_hisatr_alignment_sorted.bam,60547_hisatr_alignment_sorted.bam,60548_hisatr_alignment_sorted.bam -gff3 --useexisting --species=Artemia_francisca --etpmode --cores=30 --min_contig=5000 --softmasking --hints=hintsfile.gff --hints=prothint_augustus.gff --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franEMdata/EMReads_analysis/Expression_all/braker_outputetprep`
+`braker.pl --species=artfranewhifiremaskedrn2 --genome=asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa.masked --bam=60541_RNAalignment_Aligned.sorted.bam,60542_RNAalignment_Aligned.sorted.bam,60543_RNAalignment_Aligned.sorted.bam,60544_RNAalignment_Aligned.sorted.bam,60545_RNAalignment_Aligned.sorted.bam,60546_RNAalignment_Aligned.sorted.bam,60547_RNAalignment_Aligned.sorted.bam,60548_RNAalignment_Aligned.sorted.bam -gff3 --useexisting --etpmode --hints=/nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/ProhintDirmasked/prothint_augustus.gff --cores=30 --softmasking --hints=/nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/braker_staralign/hintsfile.gff --workingdir=/nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/braker_staralignrnd2`
 
 Braker produces many output files: 
 - augustus.hints.aa
@@ -117,7 +103,13 @@ Braker produces many output files:
 - genemark_hintsfile.gff
 -  what-to-cite.txt
 
+```
+sed 's/file_1_file_1_//g' braker.gff3 > braker_fil.gff3
+sed -i 's/file_1_file_2_/gm/g' braker_fil.gff3
+sed -i 's/file_2_/gm/g' braker_fil.gff3
+agat_convert_sp_gxf2gxf.pl -g braker_fil.gff3 -o braker_filconagat.gff3
+agat_sp_keep_longest_isoform.pl --gff braker_filconagat.gff3 -o braker_filconagat_iso.gff3
+agat_sp_filter_by_ORF_size.pl --gff braker_filconagat_iso.gff3 -o braker_filconagat_isoORF.gff3
 
-There is no much differences between augustus.hints.gtf and braker.gtf. However, augustus.hints.gtf has been validated and this is what I normally use though
-
-
+agat_sp_filter_incomplete_gene_coding_models.pl --gff braker_filconagat_isoORF3_sup100.gff --fasta ../asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa.masked -o braker_filconagat_isoORF3_sup100compgen.gff
+```
