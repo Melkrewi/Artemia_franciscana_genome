@@ -5,7 +5,7 @@ This repository includes all the scripts and commands used by the authors. If an
 
 Below is a rough guide to the content of each file/folder:
 
-1. [Genome Assembly](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/final_pipeline.md) 
+1. [Genome Assembly](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/alternative_pipeline.md) 
 2. [blobtools](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/blobtools.md)
 3. [Coverage Analysis](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/Coverage_analysis.md)
 4. [FST]()
