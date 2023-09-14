@@ -16,7 +16,9 @@ STAR --runThreadN 50 --runMode genomeGenerate --genomeDir augenome --genomeFasta
 then we ran the alignment of RNA reads 
 
 We included the options `--quantMode TranscriptomeSAM` to generate alignments that have translated transcript coordinates 
+
 `--quantTranscriptomeBan IndelSoftclipSingleend` - this will ensure no indels or soft clips are included in the alignments 
+
 `--quantMode GeneCounts` - this generate reads count per gene and can be used to determine the RNA library strandedness
 
 ```
@@ -25,6 +27,7 @@ do
 STAR --runThreadN 50 --genomeDir augenome --readFilesIn "${base}_1.fastq" "${base}_2.fastq" --outFileNamePrefix "${base}_brakmasked" --twopassMode Basic --sjdbGTFfile braker_filconagat_isoORF3_sup100compgen.gtf --sjdbScore 2 --sjdbOverhang 124 --limitSjdbInsertNsj 1000000 --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.025 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD --outSAMtype BAM SortedByCoordinate --quantMode TranscriptomeSAM GeneCounts --quantTranscriptomeBan IndelSoftclipSingleend
 done
 rm -R *_STARgenome *_STARpass1 *_STARtmp
+```
 ```
 head(60544_brakmaskedReadsPerGene.out.tab)
 N_unmapped      5789789 5789789 5789789
@@ -57,3 +60,4 @@ jg614   335     3       332
 jg615   10      0       10
 jg616   173     1       172
 jg617   1754    9       1745
+```
