@@ -13,7 +13,7 @@
 `STAR --runMode genomeGenerate --genomeDir STARgenome --runThreadN 50 --genomeFastaFiles asm_np_female_mkf02_01_09_2023_renamed_final_fin.fa`
 
 ```
-for base in $(ls /nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Annotation/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
+for base in $(ls /Annotation/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
 
 do
 srun STAR --twopassMode Basic --genomeDir STARgenome --runThreadN 50 --readFilesIn "${base}_1.fastq" "${base}_2.fastq" --outFileNamePrefix "${base}_RNAalignment_" --outSAMtype BAM Unsorted
