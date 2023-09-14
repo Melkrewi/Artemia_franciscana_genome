@@ -28,7 +28,8 @@ STAR --runThreadN 50 --genomeDir augenome --readFilesIn "${base}_1.fastq" "${bas
 done
 rm -R *_STARgenome *_STARpass1 *_STARtmp
 ```
-We then check whether we will use strandedness (no, yes or reverse) during RSEM quantification
+
+### We then check whether we will use strandedness (no, yes or reverse) during RSEM quantification
 
 The first column of `ReadsPerGene.out.tab` represent gene name
 The second column indicate RNA-seq reads count for unstranded library (`--stranded no`)
