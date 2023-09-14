@@ -22,7 +22,7 @@ We included the options `--quantMode TranscriptomeSAM` to generate alignments th
 `--quantMode GeneCounts` - this generate reads count per gene and can be used to determine the RNA library strandedness
 
 ```
-for base in $(ls /nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Expression/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
+for base in $(ls /Expression/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
 do
 STAR --runThreadN 50 --genomeDir augenome --readFilesIn "${base}_1.fastq" "${base}_2.fastq" --outFileNamePrefix "${base}_brakmasked" --twopassMode Basic --sjdbGTFfile braker_filconagat_isoORF3_sup100compgen.gtf --sjdbScore 2 --sjdbOverhang 124 --limitSjdbInsertNsj 1000000 --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.025 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD --outSAMtype BAM SortedByCoordinate --quantMode TranscriptomeSAM GeneCounts --quantTranscriptomeBan IndelSoftclipSingleend
 done
@@ -91,7 +91,7 @@ rsem-prepare-reference --gtf Rsem_brak/braker_filconagat_isoORF3_sup100compgen.g
 ### We calculate Expression Values
 
 ```
-for base in $(ls /nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Expression/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
+for base in $(ls /Expression/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
 do
 rsem-calculate-expression -p 40 --paired-end --alignments --estimate-rspd --ci-memory 100000 --no-bam-output --strandedness no "${base}_brakmaskedAligned.toTranscriptome.out.bam" Rsem_brak/asmnp_female_mkf02 "${base}_brakmasked" 
 done
@@ -107,7 +107,7 @@ jg10001 jg10001.t1      615.00  230.50  16.00   2.03    3.82
 
 We then normalize the expression for heads and gonads separately
 ```
-setwd('/nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNew/Expression/NormalizedExpression')
+setwd('Expression/NormalizedExpression')
 mh1<-read.table("60541_brakmasked.genes.results", head=T, sep="\t")
 mh2<-read.table("60542_brakmasked.genes.results", head=T, sep="\t")
 fh1<-read.table("60545_brakmasked.genes.results", head=T, sep="\t")
@@ -139,5 +139,5 @@ dev.off()
 write.table(expf2, file = "Expression_afranciscana_headsnormalized.txt", quote=F)
 ```
 
-
+References:
 (https://ycl6.gitbook.io/guide-to-rna-seq-analysis/raw-read-processing/mapping/alignment-based-method)
