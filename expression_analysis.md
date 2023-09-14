@@ -28,6 +28,15 @@ STAR --runThreadN 50 --genomeDir augenome --readFilesIn "${base}_1.fastq" "${bas
 done
 rm -R *_STARgenome *_STARpass1 *_STARtmp
 ```
+We then check whether we will use strandedness (no, yes or reverse) during RSEM quantification
+
+The first column of `ReadsPerGene.out.tab` represent gene name
+The second column indicate RNA-seq reads count for unstranded library (`--stranded no`)
+The third column represent reads count for first strand (`--stranded yes`)
+The fourth column represent reads count for reverse strand (`--stranded reverse`)
+
+This is detailed here (https://ycl6.gitbook.io/guide-to-rna-seq-analysis/raw-read-processing/mapping/alignment-based-method)
+
 ```
 head(60544_brakmaskedReadsPerGene.out.tab)
 N_unmapped      5789789 5789789 5789789
