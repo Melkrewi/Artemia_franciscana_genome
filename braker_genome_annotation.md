@@ -1,4 +1,4 @@
-# Alignment of RNA reads to the genome with hisat
+# Alignment of RNA reads to the genome with STAR
 
 ### Let's load necessary modules
 
