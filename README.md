@@ -11,4 +11,4 @@ Below is a rough guide to the content of each file/folder:
 4. [FST](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/FST.md)
 5. [Annotation](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/braker_genome_annotation.md)
 6. [Expression Analysis](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/main/expression_analysis.md)
-7. [TE_Annotation]
+7. [ TE_Annotation ](https://github.com/Melkrewi/Artemia_franciscana_genome/blob/4456b88f930bba9f20a49d8bb2bf04c57fde329c/Transposable_elements_annotation.md)
