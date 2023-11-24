@@ -1,4 +1,4 @@
-# De novo identification of repeat families using RepeatModeler  
+## De novo identification of repeat families using RepeatModeler and classification of unknown transposable elements using DeepTE
 
 `module load RepeatModeler`
 
