@@ -25,35 +25,27 @@ seqtk subseq asm_np_female_mkf02_01_09_2023_renamed_finalwscaffren-families.fa a
 module load python/3.7
 module load hmmer
 
-export TMPDIR=/nfs/scistore18/vicosgrp/vbett/Tools/DeepTE
+export TMPDIR=/home/DeepTE
 
-srun python /nfs/scistore18/vicosgrp/vbett/Tools/DeepTE/DeepTE.py -i asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_unknown-families.fa -sp M -m M -o /nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNewWscaff/TEAnnotation/DeepTE_output -d /nfs/scistore18/vicosgrp/vbett/Artemia_franhifiNewGenomeNewWscaff/TEAnnotation/DeepTE_working
+srun python DeepTE.py -i asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_unknown-families.fa -sp M -m M -o DeepTE_output -d DeepTE_working
 
-grep ">"  asm_np_female_mkf02_01_09_2023_renamed_finalwscaffren-families.fa > asmfinalwscaff_all-families.txt
+Get DNA transposons sequences
 
-grep -v "Unknown" asmfinalwscaff_all-families.txt > asmfinalwscaff_known-families.txt
+seqtk subseq asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_known-families.fa DNA_transposons.txt > DNA_transposons.fa
 
-sed -i 's/>//g' asmfinalwscaff_known-families.txt
+Get Class II from output of DeepTE
 
-seqtk subseq asm_np_female_mkf02_01_09_2023_renamed_finalwscaffren-families.fa asmfinalwscaff_known-families.txt > asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_known-families.fa
+grep -e "ClassII" opt_DeepTE.fasta > opt_DeepTE_classII.txt
 
-We then combine known sequences with just annotated TEs (annotated with DeepTE) that were unknown 
+seqtk subseq opt_DeepTE.fasta opt_DeepTE_classII.txt > opt_DeepTE_classII.fa
 
-cat DeepTE_output/opt_DeepTE.fasta asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_known-families.fa > asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-families.fa 
+Combine with DNA transposons
 
+cat DNA_transposons.fa opt_DeepTE_classII.fa > DNA_transposons_DeepTE_classIIrep.fa
 
-sed 's/ClassII_//g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-families.fa > asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
+Run DeepTE
 
-sed -i 's/ClassIII_//g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
+export TMPDIR=/home/DeepTE
+srun python DeepTE.py -i DNA_transposons_DeepTE_classIIrep.fa -sp M -m M  -fam ClassII -o DeepTE_transposons 
 
-sed -i 's/ClassI_//g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
-
-sed -i 's/ /\//g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
-
-sed -i 's/DNA_/DNA /g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
-
-sed -i 's/LTR_/LTR /g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
-
-sed -i 's/nLTR_/nLTR /g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
-
-sed -i 's/ /\//g' asm_np_female_mkf02_01_09_2023_renamed_finalwscaff_all-familiesfil.fa
+cat opt_DeepTE_classIIfilrep.fasta asm_np_femaleNoDNA_transposons.fa opt_DeepTE_classI.fasta > asm_np_female_TEclass_super-families.fa
