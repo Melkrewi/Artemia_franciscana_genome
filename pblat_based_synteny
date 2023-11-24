@@ -1,0 +1,28 @@
+# pblat based homology plot
+
+### finding the homologs between the two species 
+
+```
+module load pblat
+
+pblat -minScore=50 braker_filconagatwgenes_isoORF3_sup100compgen.aa braker_sortediso_ORF3_sup100_compgen_renamed.aa fran_vs_sin.blat -t=prot -q=prot -threads=60
+
+sort -k 10 fran_vs_sin.blat > fran_vs_sin.blat.sorted
+
+perl 2-besthitblat.pl fran_vs_sin.blat.sorted
+
+pblat -minScore=50 braker_sortediso_ORF3_sup100_compgen_renamed.aa braker_filconagatwgenes_isoORF3_sup100compgen.aa sin_vs_fran.blat -t=prot -q=prot -threads=60
+
+sort -k 10 sin_vs_fran.blat > sin_vs_fran.blat.sorted
+
+perl 2-besthitblat.pl sin_vs_fran.blat.sorted
+```
+In python we filter for reciprocal best hits between the two:
+```
+import pandas as pd
+fran_vs_sin = pd.read_csv("fran_vs_sin.blat.sorted.besthit",sep="\s+")
+sin_vs_fran=pd.read_csv("sin_vs_fran.blat.sorted.besthit",sep="\s+")
+RBH_sf=pd.merge(fran_vs_sin,sin_vs_fran,left_on='Tname',right_on='Qname')
+RBH_sf=RBH_sf[RBH_sf['Qname_x']==RBH_sf['Tname_y']][['Qname_x','Qname_y']] #Qname_x is sinica and Qname_y is fran
+RBH_sf.to_csv("fran_vs_sin_RBH.txt",index=False,header=False,sep="\t")
+```
