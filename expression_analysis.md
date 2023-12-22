@@ -93,7 +93,7 @@ rsem-prepare-reference --gtf Rsem_brak/braker_filconagat_isoORF3_sup100compgen.g
 ```
 for base in $(ls /Expression/*_1.fastq | sed -r 's/_1.fastq//' | uniq)
 do
-rsem-calculate-expression -p 40 --paired-end --alignments --estimate-rspd --ci-memory 100000 --no-bam-output --strandedness no "${base}_brakmaskedAligned.toTranscriptome.out.bam" Rsem_brak/asmnp_female_mkf02 "${base}_brakmasked" 
+rsem-calculate-expression -p 40 --paired-end --alignments --estimate-rspd --ci-memory 100000 --no-bam-output --strandedness reverse "${base}_brakmaskedAligned.toTranscriptome.out.bam" Rsem_brak/asmnp_female_mkf02 "${base}_brakmasked" 
 done
 ```
 
